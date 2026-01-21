@@ -9,9 +9,24 @@ import SwiftUI
 
 @main
 struct FinanceApp: App {
+    @State private var router = NavRouter()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack(path: $router.path) {
+                HomeView()
+                    .navigationDestination(for: Route.self) { route in
+                        switch route {
+                        case .home:
+                            HomeView()
+                        case .budgetDetail:
+                            BudgetDetailView()
+                        case .budgets:
+                            BudgetDetailView()
+                        }
+                    }
+            }
+            .environment(router)
         }
     }
 }

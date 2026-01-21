@@ -9,6 +9,7 @@ import Foundation
 
 class Spendings: Identifiable, Equatable {
     let id = UUID()
+    let parentBudgetID: UUID? = nil
     let title: String
     let amount: Double
     
@@ -26,10 +27,15 @@ class Budget: Identifiable {
     let id = UUID()
     let budgetName: String
     let totalAmount: Double
+    var subBudgets: [Spendings] = []
     
     init(budgetName: String, totalAmount: Double) {
         self.budgetName = budgetName
         self.totalAmount = totalAmount
+    }
+    
+    func addSubBudget(spending: Spendings) {
+        subBudgets.append(spending)
     }
 }
 

@@ -63,7 +63,7 @@ struct BudgetItemsListView: View {
     let chartColors: [Color]
     
     var body: some View {
-        ScrollView() {
+        ScrollView(showsIndicators: true) {
             VStack {
                 ForEach(Array(spendings.enumerated()), id: \.element.id) { index, spending in
                     
@@ -83,6 +83,7 @@ struct BudgetItemsListView: View {
                 
                 }
             }
+            .padding()
         }
     }
 }

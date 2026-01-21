@@ -13,7 +13,8 @@ struct BudgetChartView: View {
     @Binding var idx: Int?
     
     let chartColors: [Color]
-    let chartLineWidth: CGFloat = 30
+    let chartLineWidth: CGFloat
+    let diameter: CGFloat
     
     
     var body: some View {
@@ -25,7 +26,7 @@ struct BudgetChartView: View {
                 Circle()
                     .trim(from: startTrim(at: index), to: endTrim(at:index))
                     .stroke(segmentColor, style: StrokeStyle(lineWidth: chartWidth, lineCap: .butt))
-                    .frame(width: 300, height: 300)
+                    .frame(width: diameter, height: diameter)
                     .rotationEffect(Angle(degrees: -90))
                     .zIndex(1)
                     .onTapGesture {
@@ -37,7 +38,7 @@ struct BudgetChartView: View {
             Circle()
                 .trim(from: 0, to: 1)
                 .stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: chartLineWidth, lineCap: .round))
-                .frame(width: 300, height: 300)
+                .frame(width: diameter, height: diameter)
                 .rotationEffect(Angle(degrees: -90))
             VStack(alignment: .center) {
                 if let index = idx {
@@ -67,6 +68,6 @@ struct BudgetChartView: View {
 }
        
 #Preview {
-    BudgetChartView(spendings: .constant([]), idx: .constant(0), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
+    BudgetChartView(spendings: .constant([Spendings.init(title: "Groceries", amount: 0.45), Spendings.init(title: "Groceries", amount: 0.45)]), idx: .constant(nil), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan], chartLineWidth: 30, diameter: 300)
 }
 

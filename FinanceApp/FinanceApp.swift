@@ -10,6 +10,8 @@ import SwiftUI
 @main
 struct FinanceApp: App {
     @State private var router = NavRouter()
+    @State private var budgetsVM = BudgetsViewModel()
+    @State private var transactionsVM = TransactionsViewModel()
     
     var body: some Scene {
         WindowGroup {
@@ -27,6 +29,8 @@ struct FinanceApp: App {
                     }
             }
             .environment(router)
+            .environment(budgetsVM)
+            .environment(transactionsVM)
         }
     }
 }

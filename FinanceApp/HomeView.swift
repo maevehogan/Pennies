@@ -8,33 +8,23 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(NavRouter.self) private var router
+    @Environment(BudgetsViewModel.self) private var budgetsVM
     
-    // a list of dummy budgets for preview purposes
-    let previewBudgets: [Budget] =
-        [
-            Budget(budgetName: "Food", totalAmount: 500),
-            Budget(budgetName: "Entertainment", totalAmount: 300),
-            Budget(budgetName: "Utilities", totalAmount: 200),
-            Budget(budgetName: "Transportation", totalAmount: 150)
-        ]
     @State private var selectedBudgetIdx: Int = 0
-        
     
     var body: some View {
         ZStack {
-            Color.blue
+            Color.black
                 .ignoresSafeArea()
-                .opacity(0.5)
+                .opacity(0.95)
             VStack (spacing: 20) {
                 Text("Welcome Back!")
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .bold()
-                HomeChartsView(budgets: previewBudgets, selectedBudgetIdx: $selectedBudgetIdx)
-                Button("Go to Budget Detail View") {
-                    router.navBudgetDetail()
-            }
-            
+                HomeChartsView(budgets: budgetsVM.budgets, selectedBudgetIdx: $selectedBudgetIdx)
+                
+                TransactionsListView()
             }
                 
         }
@@ -150,5 +140,7 @@ struct CreateBudgetPage: View {
 #Preview {
     HomeView()
         .environment(NavRouter())
+        .environment(BudgetsViewModel())
+        
 }
 

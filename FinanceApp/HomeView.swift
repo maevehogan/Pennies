@@ -7,9 +7,8 @@
 import SwiftUI
 
 struct HomeView: View {
-    @Environment(NavRouter.self) private var router
     @Environment(BudgetsViewModel.self) private var budgetsVM
-    
+    let navBudgetDetail: () -> Void
     @State private var selectedBudgetIdx: Int = 0
     
     var body: some View {
@@ -22,7 +21,7 @@ struct HomeView: View {
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .bold()
-                HomeChartsView(budgets: budgetsVM.budgets, selectedBudgetIdx: $selectedBudgetIdx)
+                HomeChartsView(navBudgetDetail: navBudgetDetail, budgets: budgetsVM.budgets, selectedBudgetIdx: $selectedBudgetIdx)
                 
                 TransactionsListView()
             }
@@ -33,7 +32,7 @@ struct HomeView: View {
 }
 
 struct HomeChartsView: View {
-    @Environment(NavRouter.self) private var router
+    let navBudgetDetail: () -> Void
 
     let budgets: [Budget]
     @Binding var selectedBudgetIdx: Int
@@ -45,7 +44,7 @@ struct HomeChartsView: View {
                     BudgetPage(budget: budget)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        router.navBudgetDetail()
+                        navBudgetDetail()
                     }
                     .tag(index)
                 }
@@ -53,7 +52,7 @@ struct HomeChartsView: View {
                 CreateBudgetPage()
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        router.navBudgetDetail()
+                        navBudgetDetail()
                     }
                     .tag(budgets.count)
                     
@@ -138,9 +137,9 @@ struct CreateBudgetPage: View {
 
 
 #Preview {
-    HomeView()
-        .environment(NavRouter())
+    HomeView(navBudgetDetail: {})
         .environment(BudgetsViewModel())
+        .environment(TransactionsViewModel())
         
 }
 

@@ -34,6 +34,6 @@ struct BudgetDetailView: View {
 
 #Preview {
     BudgetDetailView()
-        .environment(NavRouter())
+        .environment(BudgetViewModel())
 }
 

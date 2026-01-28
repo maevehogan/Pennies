@@ -21,6 +21,12 @@ struct TransactionsListView: View {
                     
                     TransactionsItemView(transaction: transaction)
                         .padding(.horizontal)
+                        .swipeActions {
+                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                transactionsVM.deleteTransaction(transaction: transaction)
+                            }
+                            
+                        }
                 }
             }
             

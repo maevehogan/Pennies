@@ -22,4 +22,13 @@ class TransactionsViewModel {
             .init(location_spent: "Gas Station", amount_spent: 40.00)
         ]
     }
+    
+    func addTransaction(location: String, amount: Double) {
+        let newTransaction = Transaction(location_spent: location, amount_spent: amount)
+        transactions.append(newTransaction)
+    }
+    
+    func deleteTransaction(transaction: Transaction) {
+        transactions.removeAll { $0.id == transaction.id }
+    }
 }

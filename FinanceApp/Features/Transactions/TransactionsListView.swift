@@ -11,25 +11,29 @@ struct TransactionsListView: View {
     @Environment(TransactionsViewModel.self) private var transactionsVM
     
     var body: some View {
-        VStack {
-            Text("Recent Transactions:")
-                .font(.title)
-                .foregroundStyle(.blue)
-            ScrollView {
-                Spacer()
-                ForEach(Array(transactionsVM.transactions.enumerated()), id: \.element.id) { index, transaction in
-                    
-                    TransactionsItemView(transaction: transaction)
-                        .padding(.horizontal)
-                        .swipeActions {
-                            Button("Delete", systemImage: "trash", role: .destructive) {
-                                transactionsVM.deleteTransaction(transaction: transaction)
-                            }
-                            
-                        }
-                }
-            }
+        ZStack {
+            Color.black.ignoresSafeArea()
             
+            VStack {
+                Text("Recent Transactions:")
+                    .font(.title)
+                    .foregroundStyle(.blue)
+                ScrollView {
+                    Spacer()
+                    ForEach(Array(transactionsVM.transactions.enumerated()), id: \.element.id) { index, transaction in
+                        
+                        TransactionsItemView(transaction: transaction)
+                            .padding(.horizontal)
+                            .swipeActions {
+                                Button("Delete", systemImage: "trash", role: .destructive) {
+                                    transactionsVM.deleteTransaction(transaction: transaction)
+                                }
+                                
+                            }
+                    }
+                }
+                
+            }
         }
     }
 }
@@ -64,11 +68,8 @@ struct TransactionsItemView: View {
 }
 
 #Preview {
-    ZStack {
-        Color.black.ignoresSafeArea()
-        
-        TransactionsListView()
-            .environment(TransactionsViewModel())
-    }
+    TransactionsListView()
+        .environment(TransactionsViewModel())
+    
 
 }

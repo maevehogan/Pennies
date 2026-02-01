@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BudgetChartView: View {
-    @Binding var spendings: [Spendings]
+    @Binding var parentBudget: Budget
     
     @Binding var idx: Int?
     
@@ -19,7 +19,7 @@ struct BudgetChartView: View {
     
     var body: some View {
         ZStack {
-            ForEach(Array(spendings.enumerated()), id: \.element.id) { index, spending in
+            ForEach(Array(parentBudget.subBudgets.enumerated()), id: \.element.id) { index, spending in
                 let segmentColor = chartColors[index % chartColors.count]
                 let chartWidth = idx == index ? chartLineWidth * 1.25 : chartLineWidth
                     
@@ -42,10 +42,10 @@ struct BudgetChartView: View {
                 .rotationEffect(Angle(degrees: -90))
             VStack(alignment: .center) {
                 if let index = idx {
-                    Text("\(spendings[index].title)")
+                    Text("\(parentBudget.subBudgets[index].title)")
                         .font(.title).bold()
                         .foregroundColor(chartColors[index % chartColors.count])
-                    Text(String(format: "$%.2f", spendings[index].amount * 1000))
+                    Text(String(format: "$%.2f", parentBudget.subBudgets[index].amount * 1000))
                         .font(.headline)
                         .foregroundColor(.white)
                 } else {
@@ -56,18 +56,17 @@ struct BudgetChartView: View {
     }
     
     func startTrim(at index: Int) -> Double {
-        let previousSegments = spendings.prefix(index)
-        let trimStart = previousSegments.reduce(0.0) { $0 + $1.amount }
+        let previousSegments = parentBudget.subBudgets.prefix(index)
+        let trimStart = previousSegments.reduce(0.0) { $0 + ($1.amount / parentBudget.totalAmount) }
         return trimStart
     }
 
     func endTrim(at index: Int) -> Double {
-        let trimEnd = startTrim(at: index) + spendings[index].amount
+        let trimEnd = startTrim(at: index) + (parentBudget.subBudgets[index].amount / parentBudget.totalAmount)
         return trimEnd
     }
 }
        
 #Preview {
-    BudgetChartView(spendings: .constant([Spendings.init(title: "Groceries", amount: 0.45), Spendings.init(title: "Groceries", amount: 0.45)]), idx: .constant(nil), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan], chartLineWidth: 30, diameter: 300)
+    BudgetChartView(parentBudget: .constant(sampleBudgets[0]), idx: .constant(nil), chartColors: [.pink, .blue, .purple], chartLineWidth: 30, diameter: 300)
 }
-

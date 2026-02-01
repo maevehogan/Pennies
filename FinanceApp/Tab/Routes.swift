@@ -5,22 +5,21 @@
 //  Created by Maeve Hogan on 1/27/26.
 //
 
-enum HomeNavigation: Hashable{
-    case budgetDetail
+import Foundation
+
+enum HomeNavigation: Hashable {
+    case budgetDetail(budgetID: UUID)
+}
+
+enum BudgetNavigation: Hashable {
+    case budgetDetail(budgetID: UUID)
     //case createBudget
-    case transactions
 }
 
-enum BudgetRoute {
-    case budgetList
-    case budgetDetail
-    case createBudget
-}
-
-enum TransactionRoute {
+enum TransactionNavigation: Hashable {
     case transactionList
 }
 
-enum SettingsRoute {
+enum SettingsNavigation: Hashable {
     case settingsMain
 }

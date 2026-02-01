@@ -8,7 +8,10 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(BudgetsViewModel.self) private var budgetsVM
-    let navBudgetDetail: () -> Void
+    @Environment(AppRouter.self) private var router
+    let navBudgetDetail: (UUID) -> Void
+    let navTransactions: () -> Void
+    
     @State private var selectedBudgetIdx: Int = 0
     
     var body: some View {
@@ -24,6 +27,9 @@ struct HomeView: View {
                 HomeChartsView(navBudgetDetail: navBudgetDetail, budgets: budgetsVM.budgets, selectedBudgetIdx: $selectedBudgetIdx)
                 
                 TransactionsListView()
+                    .onTapGesture {
+                        navTransactions()
+                    }
             }
                 
         }
@@ -32,7 +38,7 @@ struct HomeView: View {
 }
 
 struct HomeChartsView: View {
-    let navBudgetDetail: () -> Void
+    let navBudgetDetail: (UUID) -> Void
 
     let budgets: [Budget]
     @Binding var selectedBudgetIdx: Int
@@ -44,7 +50,7 @@ struct HomeChartsView: View {
                     BudgetPage(budget: budget)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        navBudgetDetail()
+                        navBudgetDetail(budget.id)
                     }
                     .tag(index)
                 }
@@ -52,14 +58,18 @@ struct HomeChartsView: View {
                 CreateBudgetPage()
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        navBudgetDetail()
+                        // Optionally handle create new budget navigation
                     }
                     .tag(budgets.count)
                     
 
             }
             .frame(height: 400)
+            #if os(iOS) || os(tvOS) || os(watchOS)
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+            #else
+            .tabViewStyle(DefaultTabViewStyle())
+            #endif
         }
     }
 }
@@ -83,10 +93,7 @@ struct BudgetPage: View {
                     .foregroundColor(.white)
 
                 BudgetChartView(
-                    spendings: .constant([
-                        Spendings(title: "Category 1", amount: 0.4),
-                        Spendings(title: "Category 2", amount: 0.3),
-                    ]),
+                    parentBudget: .constant(budget),
                     idx: .constant(nil),
                     chartColors: chartColors,
                     chartLineWidth: chartLineWidth,
@@ -137,9 +144,9 @@ struct CreateBudgetPage: View {
 
 
 #Preview {
-    HomeView(navBudgetDetail: {})
+    HomeView(navBudgetDetail: {_ in }, navTransactions: {})
         .environment(BudgetsViewModel())
         .environment(TransactionsViewModel())
+        .environment(AppRouter())
         
 }
-

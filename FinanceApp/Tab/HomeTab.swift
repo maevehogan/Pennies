@@ -8,29 +8,35 @@
 import SwiftUI
 
 struct HomeTab: View {
-    @Binding var path: [HomeNavigation]
+    @Environment(AppRouter.self) private var router
 
     var body: some View {
-        NavigationStack(path: $path) {
+        @Bindable var router = router
+        NavigationStack(path: $router.homePath) {
             HomeView(
-                navBudgetDetail: {
-                    path.append(.budgetDetail)
+                navBudgetDetail: { budgetID in
+                    router.selectedBudgetID = budgetID
+                    router.selectedTab = .budgets
+                    router.budgetsPath.append(.budgetDetail(budgetID: budgetID))
                 },
-                
-            )
-                .navigationDestination(for: HomeNavigation.self) { destination in
-                    switch destination {
-                    case .budgetDetail:
-                        BudgetDetailView()
-                    case .transactions:
-                        TransactionsListView()
-                    }
+                navTransactions: {
+                    router.selectedTab = .transactions
                 }
+            )
+            .navigationDestination(for: HomeNavigation.self) { destination in
+                switch destination {
+                case .budgetDetail(let budgetID):
+                    BudgetDetailView(budgetID: budgetID)
+                
+                }
+            }
         }
     }
 }
 
-
 #Preview {
-    HomeTab(path: .constant([]))
+    HomeTab()
+        .environment(AppRouter())
+        .environment(BudgetsViewModel())
+        .environment(TransactionsViewModel())
 }

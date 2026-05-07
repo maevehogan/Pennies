@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import SwiftData
 
+@Model
 class Transaction: Identifiable {
-    let id = UUID()
     
-    let location_spent: String
-    let amount_spent: Double
-    let date: Date
+    var location_spent: String
+    var amount_spent: Double
+    var date: Date
     
     // Central store for all transactions (to be managed by your app/database)
     static var allTransactions: [UUID: Transaction] = [:]

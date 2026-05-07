@@ -6,17 +6,15 @@
 //
 
 import SwiftUI
+import Foundation
+import SwiftData
 
 struct BudgetPageView: View {
-    let navBudgetDetail: (_ budgetID: UUID) -> Void
+    let navBudgetDetail: (_ budget: Budget) -> Void
+    
     @Environment(BudgetsViewModel.self) private var budgetsVM
     
-    var testerBudget: Budget {
-        let budget = Budget(budgetName: "Sample Budget", totalAmount: 1000.0)
-        budget.addSubBudget(spending: Spendings(title: "Groceries", amount: 150.0))
-        budget.addSubBudget(spending: Spendings(title: "Rent", amount: 500.0))
-        return budget
-    }
+    @Query var budgets: [Budget]
     
     var body: some View {
         ZStack {
@@ -28,10 +26,10 @@ struct BudgetPageView: View {
                     .bold()
                     .padding(.top, 30)
                 VStack {
-                    ForEach(budgetsVM.budgets) { budget in
+                    ForEach(budgets) { budget in
                         BudgetPageItem(budget: budget)
                             .onTapGesture {
-                                navBudgetDetail(budget.id)
+                                navBudgetDetail(budget)
                             }
                             .padding(5)
                     }
@@ -97,5 +95,5 @@ struct BudgetPageItem: View {
 
 #Preview {
     BudgetPageView(navBudgetDetail: {budgetID in })
-        .environment(BudgetsViewModel())
 }
+

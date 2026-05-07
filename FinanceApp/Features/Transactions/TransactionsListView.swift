@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TransactionsListView: View {
-    @Environment(TransactionsViewModel.self) private var transactionsVM
+    
+    @Environment(\.modelContext) private var context
+    @Query var transactions: [Transaction]
     
     var body: some View {
         ZStack {
@@ -20,13 +23,13 @@ struct TransactionsListView: View {
                     .foregroundStyle(.blue)
                 ScrollView {
                     Spacer()
-                    ForEach(Array(transactionsVM.transactions.enumerated()), id: \.element.id) { index, transaction in
+                    ForEach(transactions, id: \.id) { transaction in
                         
                         TransactionsItemView(transaction: transaction)
                             .padding(.horizontal)
                             .swipeActions {
                                 Button("Delete", systemImage: "trash", role: .destructive) {
-                                    transactionsVM.deleteTransaction(transaction: transaction)
+                                    context.delete(transaction)
                                 }
                                 
                             }
@@ -40,6 +43,7 @@ struct TransactionsListView: View {
 
 struct TransactionsItemView: View {
     let transaction: Transaction
+    var itemColor: Color? = .blue
     
     var body: some View {
         HStack {
@@ -69,7 +73,5 @@ struct TransactionsItemView: View {
 
 #Preview {
     TransactionsListView()
-        .environment(TransactionsViewModel())
-    
 
 }

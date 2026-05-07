@@ -5,11 +5,14 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
-    @Environment(BudgetsViewModel.self) private var budgetsVM
     @Environment(AppRouter.self) private var router
-    let navBudgetDetail: (UUID) -> Void
+    
+    @Query var budgets: [Budget]
+    
+    let navBudgetDetail: (Budget) -> Void
     let navTransactions: () -> Void
     
     @State private var selectedBudgetIdx: Int = 0
@@ -24,7 +27,10 @@ struct HomeView: View {
                     .font(.largeTitle)
                     .foregroundColor(.white)
                     .bold()
-                HomeChartsView(navBudgetDetail: navBudgetDetail, budgets: budgetsVM.budgets, selectedBudgetIdx: $selectedBudgetIdx)
+                HomeChartsView(
+                    navBudgetDetail: navBudgetDetail,
+                    budgets: budgets,
+                    selectedBudgetIdx: $selectedBudgetIdx)
                 
                 TransactionsListView()
                     .onTapGesture {
@@ -38,9 +44,9 @@ struct HomeView: View {
 }
 
 struct HomeChartsView: View {
-    let navBudgetDetail: (UUID) -> Void
-
+    let navBudgetDetail: (Budget) -> Void
     let budgets: [Budget]
+    
     @Binding var selectedBudgetIdx: Int
 
     var body: some View {
@@ -50,7 +56,7 @@ struct HomeChartsView: View {
                     BudgetPage(budget: budget)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        navBudgetDetail(budget.id)
+                        navBudgetDetail(budget)
                     }
                     .tag(index)
                 }
@@ -145,7 +151,6 @@ struct CreateBudgetPage: View {
 
 #Preview {
     HomeView(navBudgetDetail: {_ in }, navTransactions: {})
-        .environment(BudgetsViewModel())
         .environment(TransactionsViewModel())
         .environment(AppRouter())
         

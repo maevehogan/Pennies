@@ -8,11 +8,11 @@
 import Foundation
 
 enum HomeNavigation: Hashable {
-    case budgetDetail(budgetID: UUID)
+    case budgetDetail(budget: Budget)
 }
 
 enum BudgetNavigation: Hashable {
-    case budgetDetail(budgetID: UUID)
+    case budgetDetail(budget: Budget)
     //case createBudget
 }
 

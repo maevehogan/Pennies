@@ -45,7 +45,7 @@ struct BudgetChartView: View {
                     Text("\(parentBudget.subBudgets[index].title)")
                         .font(.title).bold()
                         .foregroundColor(chartColors[index % chartColors.count])
-                    Text(String(format: "$%.2f", parentBudget.subBudgets[index].amount * 1000))
+                    Text(String(format: "$%.2f", parentBudget.subBudgets[index].amount))
                         .font(.headline)
                         .foregroundColor(.white)
                 } else {

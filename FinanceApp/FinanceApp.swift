@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct FinanceApp: App {
@@ -21,5 +22,10 @@ struct FinanceApp: App {
                 .environment(router)
             
         }
+        .modelContainer(for: [
+            Budget.self,
+            SubBudget.self,
+            Transaction.self,
+        ])
     }
 }

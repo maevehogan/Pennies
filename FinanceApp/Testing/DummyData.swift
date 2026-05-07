@@ -1,4 +1,3 @@
-
 // DummyData.swift
 // FinanceApp
 //
@@ -15,32 +14,28 @@ let sampleTransactions: [Transaction] = [
     Transaction(location_spent: "Hydro Quebec", amount_spent: 15.00),
 ]
 
-// Create sample spendings
-let spending1 = Spendings(title: "Groceries", amount: 150.0)
-let spending2 = Spendings(title: "Entertainment", amount: 75.0)
-let spending3 = Spendings(title: "Transport", amount: 50.0)
-let spending4 = Spendings(title: "Rent", amount: 350.0)
-let spending5 = Spendings(title: "Utilities", amount: 100.0)
 
-// MARK: - Sample Spendings
-let sampleSpendings: [Spendings] = [
-    spending1, spending2, spending3, spending4, spending5
-]
+// Create sample sub-budgets
+let spending1 = SubBudget(title: "Groceries", transactions: [sampleTransactions[0], sampleTransactions[2], sampleTransactions[4]])
+let spending2 = SubBudget(title: "Entertainment", transactions: [sampleTransactions[1]])
+let spending3 = SubBudget(title: "Transport", transactions: [sampleTransactions[3]])
+let spending4 = SubBudget(title: "Rent", transactions: [])
+let spending5 = SubBudget(title: "Utilities", transactions: [sampleTransactions[5]])
 
 // MARK: - Sample Budgets
 let sampleBudgets: [Budget] = [
     Budget(
         budgetName: "Monthly Budget",
         totalAmount: 1000.0,
-        subBudgetIDs: [
-            spending1.id, spending2.id, spending3.id
+        subBudgets: [
+            spending1, spending2, spending3
         ]
     ),
     Budget(
         budgetName: "Rent Only",
         totalAmount: 1200.0,
-        subBudgetIDs: [
-            spending2.id, spending4.id, spending5.id
+        subBudgets: [
+            spending2, spending4, spending5
         ]
     ),
     Budget(

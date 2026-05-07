@@ -8,11 +8,11 @@
 import Foundation
 import SwiftUI
 
-func navBudgetDetail(router: AppRouter, budgetID: UUID) {
+func navBudgetDetail(router: AppRouter, budget: Budget) {
     // Switch to Budgets tab
     router.selectedTab = .budgets
-    // Set the selected budget ID
-    router.selectedBudgetID = budgetID
+    // Set the selected budget
+    router.selectedBudget = budget
     
-    router.budgetsPath.append(.budgetDetail(budgetID: budgetID))
+    router.budgetsPath.append(.budgetDetail(budget: budget))
 }

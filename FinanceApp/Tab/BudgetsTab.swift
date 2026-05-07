@@ -12,17 +12,20 @@ struct BudgetsTab: View {
     
     var body: some View {
         @Bindable var router = router
+        
         NavigationStack(path: $router.budgetsPath) {
+            
             BudgetPageView(
-                navBudgetDetail: { budgetID in
-                    router.selectedBudgetID = budgetID // Set selected budgetID
-                    router.budgetsPath.append(BudgetNavigation.budgetDetail(budgetID: budgetID)) // Navigate to detail
+                navBudgetDetail: { budget in
+                    router.selectedBudget = budget // Set selected budget
+                    router.budgetsPath.append(BudgetNavigation.budgetDetail(budget: budget)) // Navigate to detail
                 },
             )
             .navigationDestination(for: BudgetNavigation.self) { destination in
                 switch destination {
-                case .budgetDetail(let budgetID):
-                    BudgetDetailView(budgetID: budgetID)
+                
+                case .budgetDetail(let budget):
+                    BudgetDetailView(budget: budget)
                 }
             }
         }
@@ -32,5 +35,4 @@ struct BudgetsTab: View {
 #Preview {
     BudgetsTab()
         .environment(AppRouter())
-        .environment(BudgetsViewModel())
 }

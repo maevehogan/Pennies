@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct BudgetItemsView: View {
-    let item: Spendings
+    let item: SubBudget
     let color: Color
     var scale: CGFloat = 1.1
 
@@ -57,30 +58,37 @@ struct BudgetItemsView: View {
 }
 
 struct BudgetItemsListView: View {
-    @Binding var spendings: [Spendings]
+    @Binding var spendings: [SubBudget]
     @Binding var idx: Int?
+    
     
     let chartColors: [Color]
     
     var body: some View {
+        // Choose which transactions to show based on selection
+        let displayedTransactions: [Transaction] = {
+            if let selected = idx, spendings.indices.contains(selected) {
+                return spendings[selected].transactions
+            } else {
+                return spendings.flatMap { $0.transactions }
+            }
+        }()
+
         ScrollView(showsIndicators: true) {
-            VStack {
-                ForEach(Array(spendings.enumerated()), id: \.element.id) { index, spending in
-                    
-                    let color: Color = chartColors[index % chartColors.count]
-                    
-                    let isRowSelected = Binding<Bool>(
-                        get: { idx == index },
-                        set: { newValue in idx = newValue ? index : nil }
-                    )
-                    
-                    BudgetItemsView(item: spending, color: color, isSelected: isRowSelected)
-                        .onTapGesture {
-                            withAnimation {
-                                idx = (idx == index) ? nil : index
-                            }
+            VStack(alignment: .leading, spacing: 12) {
+                // Transactions list
+                if !displayedTransactions.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Transactions")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 4)
+
+                        ForEach(Array(displayedTransactions.enumerated()), id: \.element.id) { tx in
+                            TransactionsItemView(transaction: tx.element, itemColor: chartColors[idx ?? 0 % chartColors.count])
                         }
-                
+                    }
+                    .padding(.bottom, 8)
                 }
             }
             .padding()
@@ -91,13 +99,8 @@ struct BudgetItemsListView: View {
     ZStack {
         Color.black
         
-        BudgetItemsListView(spendings: .constant([
-            .init(title: "Groceries", amount: 0.45),
-            .init(title: "Rent", amount: 0.35),
-            .init(title: "Utilities", amount: 0.10),
-            .init(title: "Transport", amount: 0.05),
-            .init(title: "Entertainment", amount: 0.05)
-        ]), idx: .constant(0), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
+        BudgetItemsListView(spendings: .constant(sampleBudgets[0].subBudgets
+        ), idx: .constant(0), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
         .frame(maxHeight: 100)
     }
 }

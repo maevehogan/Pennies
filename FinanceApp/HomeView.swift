@@ -30,7 +30,9 @@ struct HomeView: View {
                 HomeChartsView(
                     navBudgetDetail: navBudgetDetail,
                     budgets: budgets,
-                    selectedBudgetIdx: $selectedBudgetIdx)
+                    router: router,
+                    selectedBudgetIdx: $selectedBudgetIdx,
+                    )
                 
                 TransactionsListView()
                     .onTapGesture {
@@ -46,6 +48,7 @@ struct HomeView: View {
 struct HomeChartsView: View {
     let navBudgetDetail: (Budget) -> Void
     let budgets: [Budget]
+    let router: AppRouter
     
     @Binding var selectedBudgetIdx: Int
 
@@ -61,10 +64,10 @@ struct HomeChartsView: View {
                     .tag(index)
                 }
                 
-                CreateBudgetPage()
+                CreateBudgetPage(router: router)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        // Optionally handle create new budget navigation
+                        navCreateBudget(router: router)
                     }
                     .tag(budgets.count)
                     
@@ -115,6 +118,8 @@ struct CreateBudgetPage: View {
     let chartLineWidth: CGFloat = 20
     let diameter: CGFloat = 250
     
+    let router: AppRouter
+    
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
@@ -127,7 +132,7 @@ struct CreateBudgetPage: View {
                 
                 ZStack {
                     Button(action: {
-                        // Action to create a new budget
+                        navCreateBudget(router: router)
                     }) {
                         Image(systemName: "plus.circle")
                             .resizable()

@@ -16,6 +16,7 @@ struct BudgetChartView: View {
     let chartLineWidth: CGFloat
     let diameter: CGFloat
     
+    let minimumVisibleSize = 0.003
     
     var body: some View {
         ZStack {
@@ -45,7 +46,7 @@ struct BudgetChartView: View {
                     Text("\(parentBudget.subBudgets[index].title)")
                         .font(.title).bold()
                         .foregroundColor(chartColors[index % chartColors.count])
-                    Text(String(format: "$%.2f", parentBudget.subBudgets[index].amount))
+                    Text(String(format: "$%.2f", parentBudget.subBudgets[index].amount) + " / " + String(format: "$%.2f", parentBudget.totalAmount))
                         .font(.headline)
                         .foregroundColor(.white)
                 } else {
@@ -55,15 +56,22 @@ struct BudgetChartView: View {
         }
     }
     
+    func visibleSize(for spending: SubBudget) -> Double {
+        let percentage = spending.amount / parentBudget.totalAmount
+        return percentage == 0 ? minimumVisibleSize : percentage
+    }
+    
     func startTrim(at index: Int) -> Double {
-        let previousSegments = parentBudget.subBudgets.prefix(index)
-        let trimStart = previousSegments.reduce(0.0) { $0 + ($1.amount / parentBudget.totalAmount) }
-        return trimStart
+        parentBudget.subBudgets
+            .prefix(index)
+            .reduce(0.0) { partial, spending in
+                partial + visibleSize(for: spending)
+            }
     }
 
     func endTrim(at index: Int) -> Double {
-        let trimEnd = startTrim(at: index) + (parentBudget.subBudgets[index].amount / parentBudget.totalAmount)
-        return trimEnd
+        startTrim(at: index)
+            + visibleSize(for: parentBudget.subBudgets[index])
     }
 }
        

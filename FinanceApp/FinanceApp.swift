@@ -7,25 +7,34 @@
 
 import SwiftUI
 import SwiftData
+import Foundation
 
 @main
 struct FinanceApp: App {
-    @State private var budgetsVM = BudgetsViewModel()
-    @State private var transactionsVM = TransactionsViewModel()
+    
     @State private var router = AppRouter()
+    
+    static let sharedModelContainer: ModelContainer = {
+        do {
+            let container = try ModelContainer(for:
+                Budget.self,
+                SubBudget.self,
+                Transaction.self
+            )
+            
+            SampleDataSeeder.seed(context: container.mainContext)
+            return container
+        } catch {
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
+    }()
     
     var body: some Scene {
         WindowGroup {
             RootTabView()
-                .environment(budgetsVM)
-                .environment(transactionsVM)
                 .environment(router)
             
         }
-        .modelContainer(for: [
-            Budget.self,
-            SubBudget.self,
-            Transaction.self,
-        ])
+        .modelContainer(Self.sharedModelContainer)
     }
 }

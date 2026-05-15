@@ -9,11 +9,13 @@ import Foundation
 
 enum HomeNavigation: Hashable {
     case budgetDetail(budget: Budget)
+    case createBudget
 }
 
 enum BudgetNavigation: Hashable {
     case budgetDetail(budget: Budget)
-    //case createBudget
+    case createBudget
+    case createSubBudget(parentBudget: Budget)
 }
 
 enum TransactionNavigation: Hashable {

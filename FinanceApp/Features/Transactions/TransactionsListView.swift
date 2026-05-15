@@ -11,7 +11,7 @@ import SwiftData
 struct TransactionsListView: View {
     
     @Environment(\.modelContext) private var context
-    @Query var transactions: [Transaction]
+    @Query(sort: \Transaction.date, order: .reverse) var transactions: [Transaction]
     
     var body: some View {
         ZStack {
@@ -53,7 +53,7 @@ struct TransactionsItemView: View {
                     .foregroundColor(.white)
                 Text("\(transaction.date, format: Date.FormatStyle().month().day())")
                     .font(.subheadline)
-                    .foregroundColor(.blue)
+                    .foregroundColor(itemColor ?? Color.blue)
             }
             Spacer()
             Text(String(format: "$%.2f", transaction.amount_spent))
@@ -65,7 +65,7 @@ struct TransactionsItemView: View {
         .background(
             RoundedRectangle(cornerRadius: 14)
                 .fill(Color.white.opacity(0.1))
-                .stroke(Color.blue, lineWidth: 3)
+                .stroke(itemColor ?? Color.blue, lineWidth: 3)
         )
         
     }

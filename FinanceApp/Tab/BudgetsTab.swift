@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct BudgetsTab: View {
     @Environment(AppRouter.self) private var router
@@ -23,9 +24,12 @@ struct BudgetsTab: View {
             )
             .navigationDestination(for: BudgetNavigation.self) { destination in
                 switch destination {
-                
                 case .budgetDetail(let budget):
                     BudgetDetailView(budget: budget)
+                case .createBudget:
+                    CreateBudgetView()
+                case .createSubBudget(let parentBudget):
+                    EditBudgetView(parentBudget: parentBudget)
                 }
             }
         }
@@ -33,6 +37,14 @@ struct BudgetsTab: View {
 }
 
 #Preview {
-    BudgetsTab()
+    let container = try! ModelContainer(
+        for: Budget.self,
+        SubBudget.self,
+        Transaction.self
+    )
+    // Seed the preview container
+    SampleDataSeeder.seed(context: ModelContext(container))
+    
+    return BudgetsTab()
         .environment(AppRouter())
 }

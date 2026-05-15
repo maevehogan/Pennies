@@ -30,7 +30,6 @@ struct TransactionsTab: View {
 #Preview {
     TransactionsTab()
         .environment(TransactionsViewModel())
-        .environment(BudgetsViewModel())
         .environment(AppRouter())
 
 }

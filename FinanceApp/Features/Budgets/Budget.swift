@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Budget: Identifiable {
+class Budget {
     
     var budgetName: String
     var totalAmount: Double
@@ -24,14 +24,7 @@ class Budget: Identifiable {
     init(budgetName: String, totalAmount: Double, subBudgets: [SubBudget] = []) {
         self.budgetName = budgetName
         self.totalAmount = totalAmount
-        
-        if subBudgets.isEmpty {
-            // Create default sub-budget with title ""
-            let defaultSubBudget = SubBudget(title: "")
-            self.subBudgets = [defaultSubBudget]
-        } else {
-            self.subBudgets = subBudgets
-        }
+        self.subBudgets = subBudgets
     }
     
     func addSubBudget(subBudget: SubBudget) {

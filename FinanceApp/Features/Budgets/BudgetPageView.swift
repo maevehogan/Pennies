@@ -11,9 +11,7 @@ import SwiftData
 
 struct BudgetPageView: View {
     let navBudgetDetail: (_ budget: Budget) -> Void
-    
-    @Environment(BudgetsViewModel.self) private var budgetsVM
-    
+        
     @Query var budgets: [Budget]
     
     var body: some View {
@@ -36,6 +34,7 @@ struct BudgetPageView: View {
                     Spacer()
                     
                 }
+                
 
             }
                             
@@ -94,6 +93,16 @@ struct BudgetPageItem: View {
 }
 
 #Preview {
-    BudgetPageView(navBudgetDetail: {budgetID in })
+    let container = try! ModelContainer(
+        for: Budget.self,
+        SubBudget.self,
+        Transaction.self
+    )
+    // Seed the preview container
+    SampleDataSeeder.seed(context: ModelContext(container))
+    
+        
+    return BudgetPageView(navBudgetDetail: {budgetID in })
+        .modelContainer(container)
 }
 

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Observation
+import SwiftData
 
 struct RootTabView: View {
     @Environment(AppRouter.self) private var router
@@ -64,8 +65,16 @@ extension RootTabView {
 }
 
 #Preview {
-    RootTabView()
-        .environment(BudgetsViewModel())
-        .environment(TransactionsViewModel())
+    let container = try! ModelContainer(
+        for: Budget.self,
+        SubBudget.self,
+        Transaction.self
+    )
+    let context = ModelContext(container)
+    // Reset and seed the preview container
+    SampleDataSeeder.reset(context: context)
+    SampleDataSeeder.seed(context: context)
+    return RootTabView()
         .environment(AppRouter())
+        .modelContainer(container)
 }

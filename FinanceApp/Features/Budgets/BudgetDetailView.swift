@@ -18,11 +18,17 @@ struct BudgetDetailView: View {
         ZStack(alignment: .center) {
             Color.black.ignoresSafeArea()
             
+            
             VStack(spacing: 50) {
-                Text("\(budget.budgetName)")
-                    .font(.title)
-                    .bold()
-                    .foregroundColor(.white)
+                HStack {
+                    Text("\(budget.budgetName)")
+                        .font(.title)
+                        .bold()
+                        .foregroundColor(.white)
+                    
+                    SubBudgetDropdown(parentBudget: budget, subBudgets: budget.subBudgets)
+                        
+                }.zIndex(100)
                 BudgetChartView(
                     parentBudget:
                             .constant(budget),
@@ -30,12 +36,10 @@ struct BudgetDetailView: View {
                     chartColors: chartColors, chartLineWidth: 30,
                     diameter: 300
                 )
-                .padding()
-                
+
                 BudgetItemsListView(spendings: .constant(budget.subBudgets), idx: $selectedSpendingIdx, chartColors: chartColors
                 )
-                .frame(height: 170)
-                .padding()
+                .frame(height: 220)
             }
             
         }
@@ -44,5 +48,6 @@ struct BudgetDetailView: View {
     
 #Preview {
     BudgetDetailView(budget: sampleBudgets[0])
+        .environment(AppRouter())
 }
 

@@ -17,13 +17,13 @@ final class BudgetViewModel {
     
     // MARK: - Actions
 
-    func addSpending(to budget: Budget, title: String, context: ModelContext) {
+    func addSubBudget(to budget: Budget, title: String, context: ModelContext) {
         let newSubBudget = SubBudget(title: title, transactions: [])
         budget.subBudgets.append(newSubBudget)
         context.insert(newSubBudget)
     }
     
-    func deleteSpending(_ spending: SubBudget, from budget: Budget, context: ModelContext) {
+    func deleteSubBudget(_ spending: SubBudget, from budget: Budget, context: ModelContext) {
             budget.subBudgets.removeAll { $0.id == spending.id }
             context.delete(spending)
     }

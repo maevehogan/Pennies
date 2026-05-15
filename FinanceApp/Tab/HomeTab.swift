@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct HomeTab: View {
     @Environment(AppRouter.self) private var router
@@ -28,10 +29,12 @@ struct HomeTab: View {
                 switch destination {
                 case .budgetDetail(let budget):
                     BudgetDetailView(budget: budget)
-                
+                case .createBudget:
+                    CreateBudgetView()
                 }
             }
         }
+        
     }
 }
 

@@ -38,6 +38,8 @@ struct CreateBudgetForm: View {
     @State private var tens: Int = 0
     @State private var ones: Int = 0
     
+    @Environment(AppRouter.self) private var router
+    
     var totalAmount: Double {
         return Double(thousands + hundreds + tens + ones)
     }
@@ -142,6 +144,9 @@ struct CreateBudgetForm: View {
                     tens = 0
                     ones = 0
                     
+                    // Navigate back to the budget page
+                    router.budgetsPath = []
+                    
                 } label: {
                     VStack(spacing: 8){
                         Image(systemName: "plus.circle")
@@ -153,7 +158,7 @@ struct CreateBudgetForm: View {
                             .font(.title2)
                     }
                     
-                }
+                }.disabled(budgetName == "" || totalAmount <= 0)
                 
             }
         }.padding()
@@ -171,4 +176,5 @@ struct CreateBudgetForm: View {
     // SampleDataSeeder.seed(context: ModelContext(container))
     return CreateBudgetView()
         .modelContainer(container)
+        .environment(AppRouter())
 }

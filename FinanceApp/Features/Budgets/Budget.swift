@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 class Budget {
+    var id = UUID()
     
     var budgetName: String
     var totalAmount: Double

@@ -47,6 +47,7 @@ struct BudgetItemsListView: View {
         }
         }
 }
+
 #Preview {
     ZStack {
         Color.black

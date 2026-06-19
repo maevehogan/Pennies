@@ -39,18 +39,25 @@ struct TransactionsListView: View {
         return transactions.filter { tx in
             let passesBudget: Bool = {
                 switch filters.budgetFilter {
-                case .all:                        return true
-                case .specific(let id):           return budgetMap[tx.id] == id
-                case .unassigned:                 return budgetMap[tx.id] == nil
+                case .all:
+                    return true
+                case .specific(let id):
+                    return budgetMap[tx.id] == id
+                case .unassigned:
+                    return budgetMap[tx.id] == nil
                 }
             }()
 
             let passesDate: Bool = {
                 switch filters.dateFilter {
-                case .all:        return true
-                case .today:      return cal.isDateInToday(tx.date)
-                case .thisWeek:   return tx.date >= cal.date(byAdding: .day, value: -7, to: Date())!
-                case .thisMonth:  return cal.isDate(tx.date, equalTo: Date(), toGranularity: .month)
+                case .all:
+                    return true
+                case .today:
+                    return cal.isDateInToday(tx.date)
+                case .thisWeek:
+                    return tx.date >= cal.date(byAdding: .day, value: -7, to: Date())!
+                case .thisMonth:
+                    return cal.isDate(tx.date, equalTo: Date(), toGranularity: .month)
                 case .custom(let start, let end):
                     return tx.date >= cal.startOfDay(for: start) && tx.date <= end
                 }
@@ -83,16 +90,18 @@ struct TransactionsListView: View {
                     filterButton
                         .padding(.trailing)
                 }
+                .padding(.top, 8)
 
                 // Active filter summary chips
                 if filters.isActive {
                     filterSummary
                         .padding(.horizontal)
-                        .padding(.bottom, 6)
+                        .padding(.top, 6)
                 }
 
                 ScrollView {
                     LazyVStack(spacing: 0) {
+                        Spacer().frame(height: 8)
                         ForEach(filteredTransactions) { transaction in
                             TransactionsItemView(
                                 transaction: transaction,

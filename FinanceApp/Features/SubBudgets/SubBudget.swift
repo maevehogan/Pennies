@@ -12,12 +12,13 @@ import SwiftData
 class SubBudget {
 
     var title: String = ""
-    var amount: Double
+    @Relationship(deleteRule: .cascade)
     var transactions: [Transaction] = []
-    
+
+    var amount: Double { transactions.reduce(0) { $0 + $1.amount_spent } }
+
     init(title: String, transactions: [Transaction] = []) {
         self.title = title
         self.transactions = transactions
-        self.amount = transactions.reduce(0) { $0 + $1.amount_spent }
     }
 }

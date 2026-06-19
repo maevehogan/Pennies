@@ -74,6 +74,7 @@ extension RootTabView {
     // Reset and seed the preview container
     SampleDataSeeder.reset(context: context)
     SampleDataSeeder.seed(context: context)
+    
     return RootTabView()
         .environment(AppRouter())
         .modelContainer(container)

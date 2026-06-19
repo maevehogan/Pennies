@@ -18,8 +18,7 @@ struct BudgetsTab: View {
             
             BudgetPageView(
                 navBudgetDetail: { budget in
-                    router.selectedBudget = budget // Set selected budget
-                    router.budgetsPath.append(BudgetNavigation.budgetDetail(budget: budget)) // Navigate to detail
+                    router.budgetsPath.append(BudgetNavigation.budgetDetail(budget: budget))
                 },
             )
             .navigationDestination(for: BudgetNavigation.self) { destination in

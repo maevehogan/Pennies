@@ -17,7 +17,6 @@ struct HomeTab: View {
         NavigationStack(path: $router.homePath) {
             HomeView(
                 navBudgetDetail: { budget in
-                    router.selectedBudget = budget
                     router.selectedTab = .budgets
                     router.budgetsPath.append(.budgetDetail(budget: budget))
                 },
@@ -27,8 +26,6 @@ struct HomeTab: View {
             )
             .navigationDestination(for: HomeNavigation.self) { destination in
                 switch destination {
-                case .budgetDetail(let budget):
-                    BudgetDetailView(budget: budget)
                 case .createBudget:
                     CreateBudgetView()
                 }
@@ -41,5 +38,4 @@ struct HomeTab: View {
 #Preview {
     HomeTab()
         .environment(AppRouter())
-        .environment(TransactionsViewModel())
 }

@@ -9,30 +9,30 @@ import SwiftData
 import Foundation
 
 enum SampleDataSeeder {
-            static func reset(context: ModelContext) {
-                // Delete all Budgets
-                let budgetFetch = FetchDescriptor<Budget>()
-                if let budgets = try? context.fetch(budgetFetch) {
-                    for budget in budgets {
-                        context.delete(budget)
-                    }
-                }
-                // Delete all SubBudgets
-                let subBudgetFetch = FetchDescriptor<SubBudget>()
-                if let subBudgets = try? context.fetch(subBudgetFetch) {
-                    for subBudget in subBudgets {
-                        context.delete(subBudget)
-                    }
-                }
-                // Delete all Transactions
-                let transactionFetch = FetchDescriptor<Transaction>()
-                if let transactions = try? context.fetch(transactionFetch) {
-                    for transaction in transactions {
-                        context.delete(transaction)
-                    }
-                }
-                try? context.save()
+    static func reset(context: ModelContext) {
+        // Delete all Budgets
+        let budgetFetch = FetchDescriptor<Budget>()
+        if let budgets = try? context.fetch(budgetFetch) {
+            for budget in budgets {
+                context.delete(budget)
             }
+        }
+        // Delete all SubBudgets
+        let subBudgetFetch = FetchDescriptor<SubBudget>()
+        if let subBudgets = try? context.fetch(subBudgetFetch) {
+            for subBudget in subBudgets {
+                context.delete(subBudget)
+            }
+        }
+        // Delete all Transactions
+        let transactionFetch = FetchDescriptor<Transaction>()
+        if let transactions = try? context.fetch(transactionFetch) {
+            for transaction in transactions {
+                context.delete(transaction)
+            }
+        }
+        try? context.save()
+    }
     
     static func seed(context: ModelContext) {
         // Prevent duplicate inserts

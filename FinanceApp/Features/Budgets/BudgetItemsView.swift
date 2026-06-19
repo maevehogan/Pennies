@@ -12,6 +12,10 @@ struct BudgetItemsListView: View {
     @Binding var spendings: [SubBudget]
     @Binding var idx: Int?
     
+    @State private var openTransactionId: UUID? = nil
+    
+    @State private var showMoveSheet: Bool = false
+    @State private var transactionToMove: Transaction? = nil
     
     let chartColors: [Color]
     
@@ -24,37 +28,72 @@ struct BudgetItemsListView: View {
                 return spendings.flatMap { $0.transactions }
             }
         }()
-        VStack {
+        VStack(spacing: 0) {
             Text("Transactions")
                 .font(.headline)
                 .foregroundStyle(.white)
-                .padding(.horizontal, 4)
-            ScrollView(showsIndicators: true) {
-                VStack(alignment: .leading, spacing: 12) {
-                    // Transactions list
-                    if !displayedTransactions.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(Array(displayedTransactions.enumerated()), id: \.element.id) { tx in
-                                TransactionsItemView(transaction: tx.element, itemColor:
-                                        (idx != nil ?  chartColors[idx! % chartColors.count] : .blue
-                                    ))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 8)
+            if !displayedTransactions.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(displayedTransactions.enumerated()), id: \.element.id) { tx in
+                        TransactionsItemView(
+                            transaction: tx.element,
+                            itemColor: idx != nil ? chartColors[idx! % chartColors.count] : .white,
+                            openTransactionId: $openTransactionId,
+                            onMoreTapped: {
+                                transactionToMove = tx.element
+                                showMoveSheet = true
                             }
-                        }
-                        .padding(.bottom, 8)
+                        )
                     }
                 }
+                .padding(.bottom, 8)
+            } else {
+                Text("No transactions under this Budget")
+                    .foregroundStyle(.white)
+                    .font(.title3)
+                    .italic()
             }
         }
+        .sheet(isPresented: $showMoveSheet, onDismiss: {openTransactionId = nil} ) {
+            if let transactionToMove = transactionToMove {
+                MoveTransactionView(close: { showMoveSheet = false }, transaction: transactionToMove
+                )
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                    
+            } else {
+                Text("Error Loading Data.")
+                    .font(.headline)
+                    .foregroundColor(.red)
+                    .italic()
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                Button {
+                    showMoveSheet = false
+                } label: {
+                    Text("Close")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red.opacity(0.8))
+                        .overlay(RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.red.opacity(0.5), lineWidth: 2)
+                        )
+                        .cornerRadius(10)
+                }
+            }
+            
         }
+    }
 }
 
 #Preview {
     ZStack {
         Color.black
         
-        BudgetItemsListView(spendings: .constant(sampleBudgets[0].subBudgets
-        ), idx: .constant(0), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
-        .frame(maxHeight: 100)
-    }
+        BudgetItemsListView(spendings: .constant(sampleBudgets[0].subBudgets), idx: .constant(0), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
+        .frame(height: 150)
+    }        
 }
-

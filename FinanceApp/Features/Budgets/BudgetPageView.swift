@@ -12,6 +12,8 @@ import SwiftData
 struct BudgetPageView: View {
     let navBudgetDetail: (_ budget: Budget) -> Void
         
+    @Environment(AppRouter.self) private var router
+    
     @Query var budgets: [Budget]
     
     @State private var openBudgetId: UUID? = nil
@@ -45,6 +47,20 @@ struct BudgetPageView: View {
                         .padding(5)
                     }
                     
+                    Button(action: {
+                        navCreateBudget(router: router)
+                    }) {
+                        Image(systemName: "plus.circle")
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.white).opacity(0.7)
+                            .frame(width: 350, height: 75)
+                            .overlay(RoundedRectangle(cornerRadius: 15)
+                                .stroke(Color.white.opacity(0.7), lineWidth: 2)
+                            )
+                    }
+                    
+                    
                     Spacer()
                         
                 }
@@ -67,5 +83,6 @@ struct BudgetPageView: View {
         
     return BudgetPageView(navBudgetDetail: {budgetID in })
         .modelContainer(container)
+        .environment(AppRouter())
 }
 

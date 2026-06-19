@@ -111,7 +111,7 @@ struct BudgetCard: View {
             )
             .cornerRadius(14)
             .overlay(
-                RoundedRectangle(cornerRadius: 14)                    .stroke(Color.pink.opacity(0.6), lineWidth: 3)
+                RoundedRectangle(cornerRadius: 14)                    .stroke(Color.white.opacity(0.6), lineWidth: 3)
             )
             .background(
                 RoundedRectangle(cornerRadius: 14)

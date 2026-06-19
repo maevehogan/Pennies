@@ -17,31 +17,34 @@ struct BudgetDetailView: View {
     var body: some View {
         ZStack(alignment: .center) {
             Color.black.ignoresSafeArea()
-            
-            
-            VStack(spacing: 50) {
-                HStack {
-                    Text("\(budget.budgetName)")
-                        .font(.title)
-                        .bold()
-                        .foregroundColor(.white)
-                    
-                    SubBudgetDropdown(parentBudget: budget, subBudgets: budget.subBudgets)
-                        
-                }.zIndex(100)
-                BudgetChartView(
-                    parentBudget:
-                            .constant(budget),
-                    idx: $selectedSpendingIdx,
-                    chartColors: chartColors, chartLineWidth: 30,
-                    diameter: 300
-                )
 
-                BudgetItemsListView(spendings: .constant(budget.subBudgets), idx: $selectedSpendingIdx, chartColors: chartColors
-                )
-                .frame(height: 220)
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 50) {
+                    HStack {
+                        Text("\(budget.budgetName)")
+                            .font(.title)
+                            .bold()
+                            .foregroundColor(.white)
+
+                        SubBudgetDropdown(parentBudget: budget, subBudgets: budget.subBudgets, subBudgetIdx: $selectedSpendingIdx, colors: chartColors)
+                            .padding(.leading, 10)
+
+                    }.zIndex(100)
+                    BudgetChartView(
+                        parentBudget: .constant(budget),
+                        idx: $selectedSpendingIdx,
+                        chartColors: chartColors, chartLineWidth: 30,
+                        diameter: 300
+                    )
+
+                    BudgetItemsListView(
+                        spendings: .constant(budget.subBudgets),
+                        idx: $selectedSpendingIdx,
+                        chartColors: chartColors
+                    )
+                }
+                .padding(.bottom, 32)
             }
-            
         }
     }
 }

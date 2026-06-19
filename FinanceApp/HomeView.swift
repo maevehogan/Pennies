@@ -21,7 +21,6 @@ struct HomeView: View {
         ZStack {
             Color.black
                 .ignoresSafeArea()
-                .opacity(0.95)
             VStack (spacing: 20) {
                 Text("Welcome Back!")
                     .font(.largeTitle)
@@ -93,7 +92,7 @@ struct BudgetPage: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0))
+                .fill(Color.black)
                 
 
             VStack {
@@ -123,7 +122,7 @@ struct CreateBudgetPage: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0))
+                .fill(Color.black)
             
             VStack {
                 Text("Create New Budget")
@@ -156,7 +155,6 @@ struct CreateBudgetPage: View {
 
 #Preview {
     HomeView(navBudgetDetail: {_ in }, navTransactions: {})
-        .environment(TransactionsViewModel())
         .environment(AppRouter())
         
 }

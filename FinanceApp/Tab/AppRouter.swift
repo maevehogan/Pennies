@@ -15,5 +15,4 @@ final class AppRouter {
     var budgetsPath: [BudgetNavigation] = []
     var transactionsPath: [TransactionNavigation] = []
     var settingsPath: [SettingsNavigation] = []
-    var selectedBudget: Budget? = nil // Stores the currently selected budget
 }

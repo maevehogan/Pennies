@@ -9,69 +9,88 @@ import SwiftUI
 import SwiftData
 
 struct TransactionsListView: View {
-    
     @Environment(\.modelContext) private var context
+
     @Query(sort: \Transaction.date, order: .reverse) var transactions: [Transaction]
-    
+
+    @State private var openTransactionId: UUID? = nil
+    @State private var showMoveSheet: Bool = false
+    @State private var transactionToMove: Transaction? = nil
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation {
+                        openTransactionId = nil
+                    }
+                }
+
             VStack {
                 Text("Recent Transactions:")
                     .font(.title)
                     .foregroundStyle(.blue)
                 ScrollView {
                     Spacer()
-                    ForEach(transactions, id: \.id) { transaction in
-                        
-                        TransactionsItemView(transaction: transaction)
-                            .padding(.horizontal)
-                            .swipeActions {
-                                Button("Delete", systemImage: "trash", role: .destructive) {
-                                    context.delete(transaction)
-                                }
-                                
+                    ForEach(transactions) { transaction in
+                        TransactionsItemView(
+                            transaction: transaction,
+                            openTransactionId: $openTransactionId,
+                            onMoreTapped: {
+                                transactionToMove = transaction
+                                showMoveSheet = true
                             }
+                        )
+                        .padding(.horizontal)
                     }
                 }
-                
             }
         }
-    }
-}
-
-struct TransactionsItemView: View {
-    let transaction: Transaction
-    var itemColor: Color? = .blue
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(transaction.location_spent)
+        .sheet(isPresented: $showMoveSheet, onDismiss: {openTransactionId = nil} ) {
+            if let transactionToMove = transactionToMove {
+                MoveTransactionView(close: { showMoveSheet = false }, transaction: transactionToMove
+                )
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                    
+            } else {
+                Text("Error Loading Data.")
                     .font(.headline)
-                    .foregroundColor(.white)
-                Text("\(transaction.date, format: Date.FormatStyle().month().day())")
-                    .font(.subheadline)
-                    .foregroundColor(itemColor ?? Color.blue)
+                    .foregroundColor(.red)
+                    .italic()
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+                Button {
+                    showMoveSheet = false
+                } label: {
+                    Text("Close")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red.opacity(0.8))
+                        .overlay(RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.red.opacity(0.5), lineWidth: 2)
+                        )
+                        .cornerRadius(10)
+                }
             }
-            Spacer()
-            Text(String(format: "$%.2f", transaction.amount_spent))
-                .font(.headline)
-                .foregroundColor(.white)
+            
         }
-        .padding()
-        .frame(width: 350, height: 80)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(Color.white.opacity(0.1))
-                .stroke(itemColor ?? Color.blue, lineWidth: 3)
-        )
-        
     }
 }
 
 #Preview {
-    TransactionsListView()
+    let container = try! ModelContainer(
+        for: Budget.self,
+        SubBudget.self,
+        Transaction.self
+    )
+    // Seed the preview container
+    SampleDataSeeder.reset(context: ModelContext(container))
+    SampleDataSeeder.seed(context: ModelContext(container))
+    
+    return TransactionsListView()
+        .modelContainer(container)
 
 }

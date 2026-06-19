@@ -9,11 +9,7 @@ import Foundation
 import SwiftUI
 
 func navBudgetDetail(router: AppRouter, budget: Budget) {
-    // Switch to Budgets tab
     router.selectedTab = .budgets
-    // Set the selected budget
-    router.selectedBudget = budget
-    
     router.budgetsPath.append(.budgetDetail(budget: budget))
 }
 
@@ -23,9 +19,6 @@ func navCreateBudget(router: AppRouter) {
 }
 
 func navAddSubBudget(router: AppRouter, parentBudget: Budget) {
-    // Should already be on the budgets tab
-    // Set the selected budget to the parent of the sub-budget being created
-    router.selectedBudget = parentBudget
     router.budgetsPath.append(.createSubBudget(parentBudget: parentBudget))
 }
 

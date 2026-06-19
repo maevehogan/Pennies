@@ -29,7 +29,5 @@ struct TransactionsTab: View {
 
 #Preview {
     TransactionsTab()
-        .environment(TransactionsViewModel())
         .environment(AppRouter())
-
 }

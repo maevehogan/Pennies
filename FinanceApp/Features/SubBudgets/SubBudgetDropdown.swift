@@ -15,6 +15,9 @@ struct SubBudgetDropdown: View {
     let parentBudget: Budget
     let subBudgets: [SubBudget]
 
+    @Binding var subBudgetIdx: Int?
+    let colors: [Color]
+    
     @State private var isExpanded = false
 
     var body: some View {
@@ -46,13 +49,14 @@ struct SubBudgetDropdown: View {
                         subBudgets,
                         id: \.persistentModelID
                     ) { subBudget in
-
+                        // Find the index of this subBudget in the parentBudget.subBudgets array
+                        let idx = parentBudget.subBudgets.firstIndex(where: { $0.id == subBudget.id }) ?? 0
+                        
                         HStack {
-
+                            
                             Text(subBudget.title)
-                                .foregroundColor(.white)
+                                .foregroundColor(colors[idx % colors.count])
                                 .padding(.vertical, 10)
-
                             Spacer()
                         }
                         .padding(.horizontal, 12)
@@ -65,6 +69,14 @@ struct SubBudgetDropdown: View {
                                 )
                         )
                         .cornerRadius(10)
+                        .onTapGesture {
+                            // Set the selected sub-budget index to this sub-budget's index in the parent budget
+                        
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                subBudgetIdx = idx
+                                isExpanded = false
+                            }
+                        }
                     }
                     
                     HStack {
@@ -110,7 +122,7 @@ struct SubBudgetDropdown: View {
 #Preview {
     ZStack {
         Color.black.ignoresSafeArea()
-        SubBudgetDropdown(parentBudget: sampleBudgets[0], subBudgets: sampleBudgets[0].subBudgets)
+        SubBudgetDropdown(parentBudget: sampleBudgets[0], subBudgets: sampleBudgets[0].subBudgets, subBudgetIdx: .constant(nil), colors: [.pink, .blue, .green])
             .frame(maxWidth: 300)
     }
     .environment(AppRouter())

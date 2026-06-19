@@ -33,7 +33,6 @@ struct FinanceApp: App {
         WindowGroup {
             RootTabView()
                 .environment(router)
-            
         }
         .modelContainer(Self.sharedModelContainer)
     }

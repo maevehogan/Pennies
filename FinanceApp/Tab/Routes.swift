@@ -8,7 +8,6 @@
 import Foundation
 
 enum HomeNavigation: Hashable {
-    case budgetDetail(budget: Budget)
     case createBudget
 }
 

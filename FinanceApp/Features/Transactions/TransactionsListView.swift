@@ -83,7 +83,6 @@ struct TransactionsListView: View {
                     filterButton
                         .padding(.trailing)
                 }
-                .padding(.vertical, 8)
 
                 // Active filter summary chips
                 if filters.isActive {

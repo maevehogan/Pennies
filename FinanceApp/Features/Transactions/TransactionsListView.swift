@@ -73,15 +73,15 @@ struct TransactionsListView: View {
             VStack(spacing: 0) {
                 // Header row
                 HStack(alignment: .center) {
-                    filterButton
-                        .padding(.leading)
+                    // Invisible spacer to balance the filter button
+                    Color.clear.frame(width: 44)
                     Spacer()
                     Text("Recent Transactions")
                         .font(.title)
                         .foregroundStyle(.blue)
                     Spacer()
-                    // Invisible spacer to balance the filter button
-                    Color.clear.frame(width: 44)
+                    filterButton
+                        .padding(.trailing)
                 }
                 .padding(.vertical, 8)
 

@@ -13,12 +13,12 @@ struct TransactionsTab: View {
     var body: some View {
         @Bindable var router = router
         NavigationStack(path: $router.transactionsPath) {
-            TransactionsListView()
+            TransactionsListView(transactionPage: true)
                 .navigationDestination(for: TransactionNavigation.self) { destination in
                     switch destination {
                     case .transactionList:
-                        TransactionsListView()
-                        
+                        TransactionsListView(transactionPage: true)
+
                     }
                 }
         }

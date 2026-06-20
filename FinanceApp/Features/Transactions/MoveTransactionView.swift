@@ -11,17 +11,22 @@ import SwiftData
 struct MoveTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    
+
     @Query var budgets: [Budget]
     @State private var expandedBudgets: Set<UUID> = []
 
     @State private var showPopup = false
-    @State private var selectedSubBudget: SubBudget?
-    
+    @State private var pendingDestination: MoveDestination?
+
     let close: () -> ()
-    
+
     let transaction: Transaction // The transaction being moved
-    
+
+    enum MoveDestination {
+        case budgetItself(Budget)
+        case subBudget(SubBudget)
+    }
+
     var body: some View {
         ZStack {
             VStack {
@@ -40,7 +45,7 @@ struct MoveTransactionView: View {
                         .foregroundColor(.primary)
                         .cornerRadius(10)
                 }
-                
+
                 List {
                 ForEach(budgets, id: \.id) { budget in
                     Section {
@@ -48,26 +53,30 @@ struct MoveTransactionView: View {
                             toggleExpanded(budget: budget)
                         }
                         if expandedBudgets.contains(budget.id) {
-                            ForEach(budget.subBudgets, id: \.id) { subBudget in
+                            // Always-present option: add to the budget itself (no sub-budget)
+                            Button {
+                                pendingDestination = .budgetItself(budget)
+                                showPopup = true
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "tray")
+                                    Text("Add to \"\(budget.budgetName)\" ")
+                                        .font(.subheadline)
+                                }
+                                .foregroundColor(.blue)
+                            }
+                            .padding(.leading, 24)
+
+                            ForEach(budget.namedSubBudgets, id: \.id) { subBudget in
                                 Button {
-                                    // Handle moving transaction into sub-budget here
-                                    selectedSubBudget = subBudget
+                                    pendingDestination = .subBudget(subBudget)
                                     showPopup = true
-                                    
                                 } label: {
                                     Text(subBudget.title)
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                 }
                                 .padding(.leading, 24)
-                            }
-                            
-                            if budget.subBudgets.isEmpty {
-                                Text("No sub-budgets under this budget")
-                                    .font(.subheadline)
-                                    .italic()
-                                    .foregroundColor(.secondary)
-                                    .padding(.leading, 24)
                             }
                         }
                     }
@@ -81,18 +90,15 @@ struct MoveTransactionView: View {
             .padding(.horizontal)
             }
             .padding(.top, 20)
-            
-         
-            if showPopup {
-                let subBudget = selectedSubBudget
+
+
+            if showPopup, let destination = pendingDestination {
                 PopUpView(
                     title: "Move Transaction",
-                    message: "Are you sure you want to move this transaction to \"\(subBudget?.title ?? "the selected sub-budget")\"?",
+                    message: "Are you sure you want to move this transaction to \"\(displayName(for: destination))\"?",
                     buttonTitle: "Confirm",
                     buttonAction: {
-                        // Handle the actual move logic here
-                        TransactionService.moveTransaction(transaction: transaction, to: subBudget!, context: context)
-                        
+                        performMove(destination: destination)
                         showPopup = false
                         dismiss() // Dismiss the sheet
                     },
@@ -102,8 +108,39 @@ struct MoveTransactionView: View {
                     }
                 )
             }
-            
+
         }
+    }
+
+    private func displayName(for destination: MoveDestination) -> String {
+        switch destination {
+        case .budgetItself(let budget): return budget.budgetName
+        case .subBudget(let sub): return sub.title
+        }
+    }
+
+    private func performMove(destination: MoveDestination) {
+        let target: SubBudget
+        switch destination {
+        case .budgetItself(let budget):
+            target = ensureMainSubBudget(for: budget)
+        case .subBudget(let sub):
+            target = sub
+        }
+        TransactionService.moveTransaction(transaction: transaction, to: target, context: context)
+    }
+
+    // Older budgets persisted before the main-bucket convention won't have one.
+    // Create it lazily so a "budget itself" move always has a destination.
+    private func ensureMainSubBudget(for budget: Budget) -> SubBudget {
+        if let existing = budget.mainSubBudget {
+            return existing
+        }
+        let main = SubBudget(title: "")
+        context.insert(main)
+        budget.subBudgets.append(main)
+        try? context.save()
+        return main
     }
 
     private func toggleExpanded(budget: Budget) {
@@ -143,7 +180,7 @@ struct BudgetRow: View {
     )
     // Seed the preview container
     SampleDataSeeder.seed(context: ModelContext(container))
-    
+
     return MoveTransactionView(close: {}, transaction: sampleTransactions[0])
         .modelContainer(container)
 }

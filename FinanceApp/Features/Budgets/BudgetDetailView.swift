@@ -9,11 +9,12 @@ import SwiftData
 
 struct BudgetDetailView: View {
     let budget: Budget
-    
+
     @State private var selectedSpendingIdx: Int? = nil
-    
+    @State private var openTransactionId: UUID? = nil
+
     let chartColors: [Color] = [.pink, .blue, .purple, .indigo, .mint, .cyan]
-    
+
     var body: some View {
         ZStack(alignment: .center) {
             Color.black.ignoresSafeArea()
@@ -40,12 +41,23 @@ struct BudgetDetailView: View {
                     BudgetItemsListView(
                         spendings: .constant(budget.subBudgets),
                         idx: $selectedSpendingIdx,
+                        openTransactionId: $openTransactionId,
                         chartColors: chartColors
                     )
                 }
                 .padding(.bottom, 32)
             }
         }
+        .contentShape(Rectangle())
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                if openTransactionId != nil {
+                    withAnimation(.spring(response: 0.3)) {
+                        openTransactionId = nil
+                    }
+                }
+            }
+        )
     }
 }
     

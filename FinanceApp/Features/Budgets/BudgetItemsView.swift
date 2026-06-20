@@ -11,12 +11,8 @@ import Foundation
 struct BudgetItemsListView: View {
     @Binding var spendings: [SubBudget]
     @Binding var idx: Int?
-    
-    @State private var openTransactionId: UUID? = nil
-    
-    @State private var showMoveSheet: Bool = false
-    @State private var transactionToMove: Transaction? = nil
-    
+    @Binding var openTransactionId: UUID?
+
     let chartColors: [Color]
     
     var body: some View {
@@ -40,11 +36,7 @@ struct BudgetItemsListView: View {
                         TransactionsItemView(
                             transaction: tx.element,
                             itemColor: idx != nil ? chartColors[idx! % chartColors.count] : .white,
-                            openTransactionId: $openTransactionId,
-                            onMoreTapped: {
-                                transactionToMove = tx.element
-                                showMoveSheet = true
-                            }
+                            openTransactionId: $openTransactionId
                         )
                     }
                 }
@@ -56,44 +48,14 @@ struct BudgetItemsListView: View {
                     .italic()
             }
         }
-        .sheet(isPresented: $showMoveSheet, onDismiss: {openTransactionId = nil} ) {
-            if let transactionToMove = transactionToMove {
-                MoveTransactionView(close: { showMoveSheet = false }, transaction: transactionToMove
-                )
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-                    
-            } else {
-                Text("Error Loading Data.")
-                    .font(.headline)
-                    .foregroundColor(.red)
-                    .italic()
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-                Button {
-                    showMoveSheet = false
-                } label: {
-                    Text("Close")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.red.opacity(0.8))
-                        .overlay(RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.red.opacity(0.5), lineWidth: 2)
-                        )
-                        .cornerRadius(10)
-                }
-            }
-            
-        }
     }
 }
 
 #Preview {
     ZStack {
         Color.black
-        
-        BudgetItemsListView(spendings: .constant(sampleBudgets[0].subBudgets), idx: .constant(0), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
+
+        BudgetItemsListView(spendings: .constant(sampleBudgets[0].subBudgets), idx: .constant(0), openTransactionId: .constant(nil), chartColors: [.pink, .blue, .purple, .indigo, .mint, .cyan])
         .frame(height: 150)
-    }        
+    }
 }

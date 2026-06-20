@@ -19,6 +19,8 @@ struct TransactionsListView: View {
     @State private var transactionToMove: Transaction? = nil
     @State private var showFilterSheet: Bool = false
     @State private var filters = TransactionFilters()
+    
+    let transactionPage: Bool
 
     // Lookup: transaction ID → the budget it lives in
     private var transactionBudgetMap: [UUID: UUID] {
@@ -70,25 +72,22 @@ struct TransactionsListView: View {
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        openTransactionId = nil
-                    }
-                }
 
             VStack(spacing: 0) {
                 // Header row
                 HStack(alignment: .center) {
                     // Invisible spacer to balance the filter button
-                    Color.clear.frame(width: 44)
                     Spacer()
                     Text("Recent Transactions")
                         .font(.title)
                         .foregroundStyle(.blue)
+                    
+                    if transactionPage {
+                        filterButton
+                            .padding(.trailing)
+                    }
+                    
                     Spacer()
-                    filterButton
-                        .padding(.trailing)
                 }
                 .padding(.top, 8)
 
@@ -126,6 +125,16 @@ struct TransactionsListView: View {
                 }
             }
         }
+        .contentShape(Rectangle())
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                if openTransactionId != nil {
+                    withAnimation(.spring(response: 0.3)) {
+                        openTransactionId = nil
+                    }
+                }
+            }
+        )
         .sheet(isPresented: $showFilterSheet) {
             TransactionFilterSheet(filters: $filters, budgets: budgets)
                 .presentationDetents([.medium, .large])
@@ -253,9 +262,10 @@ struct TransactionsListView: View {
         SubBudget.self,
         Transaction.self
     )
-    SampleDataSeeder.reset(context: ModelContext(container))
-    SampleDataSeeder.seed(context: ModelContext(container))
+    let context = ModelContext(container)
+    SampleDataSeeder.reset(context: context)
+    SampleDataSeeder.seed(context: context)
 
-    return TransactionsListView()
+    return TransactionsListView(transactionPage: true)
         .modelContainer(container)
 }

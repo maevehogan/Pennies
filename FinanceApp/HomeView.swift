@@ -33,7 +33,7 @@ struct HomeView: View {
                     selectedBudgetIdx: $selectedBudgetIdx,
                     )
                 
-                TransactionsListView()
+                TransactionsListView(transactionPage: false)
                     .onTapGesture {
                         navTransactions()
                     }

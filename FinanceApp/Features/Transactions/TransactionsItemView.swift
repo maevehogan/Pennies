@@ -23,18 +23,23 @@ struct TransactionsItemView: View {
     // Callback for when the More button is tapped
     var onMoreTapped: (() -> Void)? = nil
 
+    private var showsMoreButton: Bool { onMoreTapped != nil }
+    private var maxSwipe: CGFloat { showsMoreButton ? deleteWidth + moreWidth : deleteWidth }
+
     var body: some View {
         ZStack(alignment: .trailing) {
             // BACKGROUND BUTTONS
             HStack(spacing: 0) {
-                Button {
-                    onMoreTapped?()
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .font(.title3)
-                        .foregroundColor(.white)
-                        .frame(width: moreWidth, height: 80)
-                        .background(Color.gray)
+                if showsMoreButton {
+                    Button {
+                        onMoreTapped?()
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                            .frame(width: moreWidth, height: 80)
+                            .background(Color.gray)
+                    }
                 }
 
                 Button {
@@ -87,7 +92,7 @@ struct TransactionsItemView: View {
                             let translation = value.translation
                             if abs(translation.width) > abs(translation.height) && translation.width < 0 {
                                 withAnimation(.spring) {
-                                    offsetX = max(translation.width, -(deleteWidth + moreWidth))
+                                    offsetX = max(translation.width, -maxSwipe)
                                 }
                             }
                         }
@@ -97,7 +102,7 @@ struct TransactionsItemView: View {
                                 withAnimation(.spring(response: 0.3)) {
                                     // Snap open if dragged far enough
                                     if value.translation.width < -40 {
-                                        offsetX = -(deleteWidth + moreWidth)
+                                        offsetX = -maxSwipe
                                         openTransactionId = transaction.id
                                     } else {
                                         offsetX = 0

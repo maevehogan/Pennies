@@ -46,7 +46,7 @@ struct SubBudgetDropdown: View {
                 VStack(spacing: 5) {
 
                     ForEach(
-                        subBudgets,
+                        subBudgets.filter { !$0.title.isEmpty },
                         id: \.persistentModelID
                     ) { subBudget in
                         // Find the index of this subBudget in the parentBudget.subBudgets array

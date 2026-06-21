@@ -12,7 +12,7 @@ import SwiftData
 struct RootTabView: View {
     @Environment(AppRouter.self) private var router
     @Environment(\.modelContext) private var context
-    let onLogout: () -> Void
+    let onLogout: (ModelContext) -> Void
 
     var body: some View {
         TabView(selection: tabSelection()) {
@@ -34,21 +34,17 @@ struct RootTabView: View {
                     }
                     .tag(TabItem.transactions)
 
-                SettingsTab(onLogout: onLogout)
+                SettingsTab(onLogout: { onLogout(context) })
                     .tabItem {
                         Label("Settings", systemImage: "gearshape")
                     }
                     .tag(TabItem.settings)
             }
             .task {
-                // Pull latest budgets from the server into the local SwiftData cache.
-                // Silently ignores errors — the user sees cached data on network failure.
                 let sync = SyncService(context: context)
                 try? await sync.syncBudgets()
-
-                // Ensure the hidden unassigned budget exists locally for transactions
-                // that the user hasn't assigned to a real budget yet.
-                BudgetService.ensureUnassignedBudget(context: context)
+                try? await sync.syncTransactions()
+                await BudgetService.ensureUnassignedBudget(context: context)
             }
     }
 }
@@ -87,7 +83,7 @@ extension RootTabView {
     SampleDataSeeder.reset(context: context)
     SampleDataSeeder.seed(context: context)
     
-    return RootTabView(onLogout: {})
+    return RootTabView(onLogout: { _ in })
         .environment(AppRouter())
         .modelContainer(container)
 }

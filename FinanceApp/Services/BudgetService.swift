@@ -14,11 +14,10 @@ let unassignedBudgetName = "__unassigned__"
 
 struct BudgetService {
 
-    // Returns the hidden "Unassigned" budget, creating it if it doesn't exist.
-    // This budget holds transactions the user hasn't assigned to a real budget yet.
-    // It is excluded from BudgetPageView and all budget totals.
+    // Returns the hidden "Unassigned" budget, creating it locally and on the server if needed.
+    // Must be called after syncBudgets so server-synced copies are already in SwiftData.
     @discardableResult
-    static func ensureUnassignedBudget(context: ModelContext) -> Budget {
+    static func ensureUnassignedBudget(context: ModelContext) async -> Budget {
         let descriptor = FetchDescriptor<Budget>()
         let all = (try? context.fetch(descriptor)) ?? []
         if let existing = all.first(where: { $0.budgetName == unassignedBudgetName }) {
@@ -27,6 +26,11 @@ struct BudgetService {
         let budget = Budget(budgetName: unassignedBudgetName, totalAmount: 0)
         context.insert(budget)
         try? context.save()
+
+        // Push to the server so it survives logout/wipe and syncs back on next login
+        let sync = SyncService(context: context)
+        try? await sync.createBudget(name: unassignedBudgetName, totalAmount: 0, localBudget: budget)
+
         return budget
     }
 

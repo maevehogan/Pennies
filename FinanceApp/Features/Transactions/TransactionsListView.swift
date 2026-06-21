@@ -116,6 +116,9 @@ struct TransactionsListView: View {
                                 openTransactionId: $openTransactionId,
                                 onMoreTapped: {
                                     transactionToMove = transaction
+                                },
+                                onDeleteTapped: {
+                                    Task { await deleteTransaction(transaction) }
                                 }
                             )
                             .padding(.horizontal)
@@ -223,6 +226,11 @@ struct TransactionsListView: View {
             let fmt = Date.FormatStyle().month(.abbreviated).day()
             return "\(start.formatted(fmt)) – \(end.formatted(fmt))"
         }
+    }
+
+    private func deleteTransaction(_ transaction: Transaction) async {
+        let sync = SyncService(context: context)
+        try? await sync.deleteTransaction(transaction)
     }
 
     private func chip(label: String, onRemove: @escaping () -> Void) -> some View {

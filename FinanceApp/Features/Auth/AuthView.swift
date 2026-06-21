@@ -18,7 +18,7 @@ struct AuthView: View {
     @State private var errorMessage: String?
 
     // Called by FinanceApp when auth succeeds so it can swap in RootTabView
-    let onSuccess: () -> Void
+    let onSuccess: (String) -> Void
 
     var body: some View {
         ZStack {
@@ -127,7 +127,7 @@ struct AuthView: View {
             } else {
                 try await AuthAPI.login(email: email, password: password)
             }
-            onSuccess()
+            onSuccess(email)
         } catch let error as APIError {
             errorMessage = error.errorDescription
         } catch {
@@ -137,5 +137,5 @@ struct AuthView: View {
 }
 
 #Preview {
-    AuthView(onSuccess: {})
+    AuthView(onSuccess: { _ in })
 }

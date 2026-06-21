@@ -20,8 +20,8 @@ struct TransactionsItemView: View {
     @State var offsetX: CGFloat = 0
     @Binding var openTransactionId: UUID?
 
-    // Callback for when the More button is tapped
     var onMoreTapped: (() -> Void)? = nil
+    var onDeleteTapped: (() -> Void)? = nil
 
     private var showsMoreButton: Bool { onMoreTapped != nil }
     private var maxSwipe: CGFloat { showsMoreButton ? deleteWidth + moreWidth : deleteWidth }
@@ -43,7 +43,7 @@ struct TransactionsItemView: View {
                 }
 
                 Button {
-                    // Delete feature
+                    onDeleteTapped?()
                 } label: {
                     Image(systemName: "trash.fill")
                         .font(.title3)

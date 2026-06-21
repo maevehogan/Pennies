@@ -40,7 +40,7 @@ final class APIClient {
     // For the iOS Simulator use your Mac's local IP (not localhost — the simulator
     // has its own network stack). For a physical device, use the same IP.
     // Change to your production URL before shipping.
-    private let baseURL = "http://172.16.101.181:8080"
+    private let baseURL = "http://192.168.1.27:8080"
 
     private let session: URLSession
     private let decoder: JSONDecoder

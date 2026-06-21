@@ -13,6 +13,7 @@ import Foundation
 struct FinanceApp: App {
 
     @State private var router = AppRouter()
+    @State private var session = UserSession()
     // Tracks whether the user has a valid JWT. Flips to true after login/register,
     // false after logout. Drives the AuthView ↔ RootTabView swap.
     @State private var isLoggedIn = APIClient.shared.isLoggedIn
@@ -33,10 +34,17 @@ struct FinanceApp: App {
     var body: some Scene {
         WindowGroup {
             if isLoggedIn {
-                RootTabView(onLogout: { isLoggedIn = false })
-                    .environment(router)
+                RootTabView(onLogout: { context in
+                    session.logout(context: context)
+                    isLoggedIn = false
+                })
+                .environment(router)
+                .environment(session)
             } else {
-                AuthView(onSuccess: { isLoggedIn = true })
+                AuthView(onSuccess: { email in
+                    session.login(email: email)
+                    isLoggedIn = true
+                })
             }
         }
         .modelContainer(Self.sharedModelContainer)

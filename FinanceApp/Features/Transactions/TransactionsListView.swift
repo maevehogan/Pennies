@@ -15,7 +15,6 @@ struct TransactionsListView: View {
     @Query var budgets: [Budget]
 
     @State private var openTransactionId: UUID? = nil
-    @State private var showMoveSheet: Bool = false
     @State private var transactionToMove: Transaction? = nil
     @State private var showFilterSheet: Bool = false
     @State private var showCreateSheet: Bool = false
@@ -117,7 +116,6 @@ struct TransactionsListView: View {
                                 openTransactionId: $openTransactionId,
                                 onMoreTapped: {
                                     transactionToMove = transaction
-                                    showMoveSheet = true
                                 }
                             )
                             .padding(.horizontal)
@@ -155,32 +153,10 @@ struct TransactionsListView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
-        .sheet(isPresented: $showMoveSheet, onDismiss: { openTransactionId = nil }) {
-            if let transactionToMove = transactionToMove {
-                MoveTransactionView(close: { showMoveSheet = false }, transaction: transactionToMove)
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-            } else {
-                Text("Error Loading Data.")
-                    .font(.headline)
-                    .foregroundColor(.red)
-                    .italic()
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.visible)
-                Button {
-                    showMoveSheet = false
-                } label: {
-                    Text("Close")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.red.opacity(0.8))
-                        .overlay(RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.red.opacity(0.5), lineWidth: 2)
-                        )
-                        .cornerRadius(10)
-                }
-            }
+        .sheet(item: $transactionToMove, onDismiss: { openTransactionId = nil }) { tx in
+            MoveTransactionView(close: { transactionToMove = nil }, transaction: tx)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
     }
 

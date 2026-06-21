@@ -25,6 +25,24 @@ struct MoveTransactionView: View {
     enum MoveDestination {
         case budgetItself(Budget)
         case subBudget(SubBudget)
+        case unassign(fromBudgetName: String)
+    }
+
+    // The named budget this transaction belongs to (excludes the hidden unassigned budget)
+    private var currentBudget: Budget? {
+        for budget in budgets {
+            guard budget.budgetName != unassignedBudgetName else { continue }
+            for sub in budget.subBudgets {
+                if sub.transactions.contains(where: { $0.id == transaction.id }) {
+                    return budget
+                }
+            }
+        }
+        return nil
+    }
+
+    private var visibleBudgets: [Budget] {
+        budgets.filter { $0.budgetName != unassignedBudgetName }
     }
 
     var body: some View {
@@ -46,8 +64,9 @@ struct MoveTransactionView: View {
                         .cornerRadius(10)
                 }
 
+
                 List {
-                ForEach(budgets, id: \.id) { budget in
+                ForEach(visibleBudgets, id: \.id) { budget in
                     Section {
                         BudgetRow(budget: budget, isExpanded: expandedBudgets.contains(budget.id)) {
                             toggleExpanded(budget: budget)
@@ -91,11 +110,25 @@ struct MoveTransactionView: View {
             }
             .padding(.top, 20)
 
+            if let budget = currentBudget {
+                Button {
+                    pendingDestination = .unassign(fromBudgetName: budget.budgetName)
+                    showPopup = true
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "minus.circle")
+                        Text("Remove from \"\(budget.budgetName)\"")
+                            .font(.subheadline)
+                    }
+                    .foregroundColor(.red)
+                    .padding(.vertical, 8)
+                }
+            }
 
             if showPopup, let destination = pendingDestination {
                 PopUpView(
                     title: "Move Transaction",
-                    message: "Are you sure you want to move this transaction to \"\(displayName(for: destination))\"?",
+                    message: popupMessage(for: destination),
                     buttonTitle: "Confirm",
                     buttonAction: {
                         performMove(destination: destination)
@@ -116,18 +149,29 @@ struct MoveTransactionView: View {
         switch destination {
         case .budgetItself(let budget): return budget.budgetName
         case .subBudget(let sub): return sub.title
+        case .unassign(let name): return name
+        }
+    }
+
+    private func popupMessage(for destination: MoveDestination) -> String {
+        switch destination {
+        case .unassign(let name):
+            return "Are you sure you want to remove this transaction from \"\(name)\"?"
+        default:
+            return "Are you sure you want to move this transaction to \"\(displayName(for: destination))\"?"
         }
     }
 
     private func performMove(destination: MoveDestination) {
-        let target: SubBudget
         switch destination {
         case .budgetItself(let budget):
-            target = ensureMainSubBudget(for: budget)
+            let target = ensureMainSubBudget(for: budget)
+            TransactionService.moveTransaction(transaction: transaction, to: target, context: context)
         case .subBudget(let sub):
-            target = sub
+            TransactionService.moveTransaction(transaction: transaction, to: sub, context: context)
+        case .unassign:
+            TransactionService.unassignTransaction(transaction: transaction, context: context)
         }
-        TransactionService.moveTransaction(transaction: transaction, to: target, context: context)
     }
 
     // Older budgets persisted before the main-bucket convention won't have one.

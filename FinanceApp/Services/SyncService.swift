@@ -157,6 +157,14 @@ struct SyncService {
     // Inserts or updates a SubBudget and its transactions from a server response.
     private func upsertSubBudget(_ response: SubBudgetResponse, under budget: Budget) {
         let sub = findOrCreate(SubBudget.self, serverId: response.id) {
+            // Before creating a new sub-budget, check if Budget.init already created
+            // a local placeholder with the same title and no serverId. Reuse it to
+            // avoid ending up with duplicate sub-budgets (especially the main bucket).
+            if let placeholder = budget.subBudgets.first(where: {
+                $0.serverId == nil && $0.title == response.title
+            }) {
+                return placeholder
+            }
             let s = SubBudget(title: response.title)
             budget.subBudgets.append(s)
             return s
@@ -170,17 +178,20 @@ struct SyncService {
     }
 
     // Inserts or updates a Transaction from a server response.
-    // Can be called from budget sync (with a known parent sub) or from flat transaction sync.
+    // Always ensures the transaction is linked to its sub-budget, even for existing records.
     private func upsertTransaction(_ response: TransactionResponse, under sub: SubBudget? = nil) {
         let tx = findOrCreate(Transaction.self, serverId: response.id) {
-            let t = Transaction(location_spent: response.locationSpent, amount_spent: response.amountSpent)
-            sub?.transactions.append(t)
-            return t
+            Transaction(location_spent: response.locationSpent, amount_spent: response.amountSpent)
         }
         tx.serverId = response.id
         tx.location_spent = response.locationSpent
         tx.amount_spent = response.amountSpent
         tx.date = response.date
+
+        // Always re-link — handles both new records and existing ones that lost their relationship
+        if let sub, !sub.transactions.contains(where: { $0.id == tx.id }) {
+            sub.transactions.append(tx)
+        }
     }
 
     // Looks up an existing SwiftData record by serverId, or creates a new one using the factory.

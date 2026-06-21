@@ -131,13 +131,14 @@ struct MoveTransactionView: View {
                     message: popupMessage(for: destination),
                     buttonTitle: "Confirm",
                     buttonAction: {
-                        performMove(destination: destination)
+                        Task {
+                            await performMove(destination: destination)
+                        }
                         showPopup = false
-                        dismiss() // Dismiss the sheet
+                        dismiss()
                     },
                     closeAction: {
                         showPopup = false
-                        // Do NOT dismiss the sheet here
                     }
                 )
             }
@@ -162,16 +163,26 @@ struct MoveTransactionView: View {
         }
     }
 
-    private func performMove(destination: MoveDestination) {
+    private func performMove(destination: MoveDestination) async {
+        let target: SubBudget?
         switch destination {
         case .budgetItself(let budget):
-            let target = ensureMainSubBudget(for: budget)
-            TransactionService.moveTransaction(transaction: transaction, to: target, context: context)
+            target = ensureMainSubBudget(for: budget)
         case .subBudget(let sub):
-            TransactionService.moveTransaction(transaction: transaction, to: sub, context: context)
+            target = sub
         case .unassign:
-            TransactionService.unassignTransaction(transaction: transaction, context: context)
+            // Move to the __unassigned__ budget's main sub-budget
+            target = budgets.first(where: { $0.budgetName == unassignedBudgetName })?.mainSubBudget
         }
+
+        guard let target else { return }
+
+        // Update locally
+        TransactionService.moveTransaction(transaction: transaction, to: target, context: context)
+
+        // Sync to server so the move survives logout/re-login
+        let sync = SyncService(context: context)
+        try? await sync.moveTransaction(transaction, to: target)
     }
 
     // Older budgets persisted before the main-bucket convention won't have one.

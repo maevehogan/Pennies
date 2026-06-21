@@ -43,7 +43,6 @@ struct RootTabView: View {
             .task {
                 let sync = SyncService(context: context)
                 try? await sync.syncBudgets()
-                try? await sync.syncTransactions()
                 await BudgetService.ensureUnassignedBudget(context: context)
             }
     }

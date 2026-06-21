@@ -10,7 +10,8 @@ import SwiftData
 struct HomeView: View {
     @Environment(AppRouter.self) private var router
     
-    @Query var budgets: [Budget]
+    @Query(filter: #Predicate<Budget> { $0.budgetName != "__unassigned__" })
+    var budgets: [Budget]
     
     let navBudgetDetail: (Budget) -> Void
     let navTransactions: () -> Void

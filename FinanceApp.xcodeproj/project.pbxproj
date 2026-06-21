@@ -6,13 +6,39 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CA6F98E82FE84A8E004DACAB /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E22FE84A8E004DACAB /* APIClient.swift */; };
+		CA6F98E92FE84A8E004DACAB /* APIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E32FE84A8E004DACAB /* APIModels.swift */; };
+		CA6F98EA2FE84A8E004DACAB /* TransactionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E62FE84A8E004DACAB /* TransactionAPI.swift */; };
+		CA6F98EB2FE84A8E004DACAB /* BudgetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E52FE84A8E004DACAB /* BudgetAPI.swift */; };
+		CA6F98EC2FE84A8E004DACAB /* AuthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E42FE84A8E004DACAB /* AuthAPI.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		CA2309CB2F09FC0E00F92F9F /* FinanceApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinanceApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA6F98E22FE84A8E004DACAB /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		CA6F98E32FE84A8E004DACAB /* APIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModels.swift; sourceTree = "<group>"; };
+		CA6F98E42FE84A8E004DACAB /* AuthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPI.swift; sourceTree = "<group>"; };
+		CA6F98E52FE84A8E004DACAB /* BudgetAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetAPI.swift; sourceTree = "<group>"; };
+		CA6F98E62FE84A8E004DACAB /* TransactionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAPI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CA6F98F12FE85235004DACAB /* Exceptions for "FinanceApp" folder in "FinanceApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CA2309CA2F09FC0E00F92F9F /* FinanceApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CA2309CD2F09FC0E00F92F9F /* FinanceApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CA6F98F12FE85235004DACAB /* Exceptions for "FinanceApp" folder in "FinanceApp" target */,
+			);
 			path = FinanceApp;
 			sourceTree = "<group>";
 		};
@@ -32,6 +58,7 @@
 		CA2309C22F09FC0E00F92F9F = {
 			isa = PBXGroup;
 			children = (
+				CA6F98E72FE84A8E004DACAB /* Networking */,
 				CA2309CD2F09FC0E00F92F9F /* FinanceApp */,
 				CA2309CC2F09FC0E00F92F9F /* Products */,
 			);
@@ -43,6 +70,18 @@
 				CA2309CB2F09FC0E00F92F9F /* FinanceApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CA6F98E72FE84A8E004DACAB /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				CA6F98E22FE84A8E004DACAB /* APIClient.swift */,
+				CA6F98E32FE84A8E004DACAB /* APIModels.swift */,
+				CA6F98E42FE84A8E004DACAB /* AuthAPI.swift */,
+				CA6F98E52FE84A8E004DACAB /* BudgetAPI.swift */,
+				CA6F98E62FE84A8E004DACAB /* TransactionAPI.swift */,
+			);
+			path = Networking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,6 +158,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA6F98E82FE84A8E004DACAB /* APIClient.swift in Sources */,
+				CA6F98E92FE84A8E004DACAB /* APIModels.swift in Sources */,
+				CA6F98EA2FE84A8E004DACAB /* TransactionAPI.swift in Sources */,
+				CA6F98EB2FE84A8E004DACAB /* BudgetAPI.swift in Sources */,
+				CA6F98EC2FE84A8E004DACAB /* AuthAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +301,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FinanceApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FinanceApp/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -295,6 +340,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FinanceApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FinanceApp/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=*]" = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

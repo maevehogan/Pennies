@@ -9,25 +9,23 @@ import SwiftUI
 
 struct SettingsTab: View {
     @Environment(AppRouter.self) private var router
-    
+    let onLogout: () -> Void
+
     var body: some View {
         @Bindable var router = router
         NavigationStack(path: $router.settingsPath) {
-            SettingsView(
-                //navSettings: {},
-            )
+            SettingsView(onLogout: onLogout)
                 .navigationDestination(for: SettingsNavigation.self) { destination in
                     switch destination {
                     case .settingsMain:
-                        SettingsView()
+                        SettingsView(onLogout: onLogout)
                     }
                 }
         }
-
     }
 }
 
 #Preview {
-    SettingsTab()
+    SettingsTab(onLogout: {})
         .environment(AppRouter())
 }

@@ -11,9 +11,12 @@ import Foundation
 
 @main
 struct FinanceApp: App {
-    
+
     @State private var router = AppRouter()
-    
+    // Tracks whether the user has a valid JWT. Flips to true after login/register,
+    // false after logout. Drives the AuthView ↔ RootTabView swap.
+    @State private var isLoggedIn = APIClient.shared.isLoggedIn
+
     static let sharedModelContainer: ModelContainer = {
         do {
             let container = try ModelContainer(for:
@@ -21,18 +24,20 @@ struct FinanceApp: App {
                 SubBudget.self,
                 Transaction.self
             )
-            
-            SampleDataSeeder.seed(context: container.mainContext)
             return container
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
     }()
-    
+
     var body: some Scene {
         WindowGroup {
-            RootTabView()
-                .environment(router)
+            if isLoggedIn {
+                RootTabView(onLogout: { isLoggedIn = false })
+                    .environment(router)
+            } else {
+                AuthView(onSuccess: { isLoggedIn = true })
+            }
         }
         .modelContainer(Self.sharedModelContainer)
     }

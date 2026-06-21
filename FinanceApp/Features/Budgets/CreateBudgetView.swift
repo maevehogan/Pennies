@@ -30,14 +30,15 @@ struct CreateBudgetView: View {
 
 struct CreateBudgetForm: View {
     @Environment(\.modelContext) private var context
-    
+
     @State private var budgetName: String = ""
-    
+    @State private var isSaving = false
+
     @State private var thousands: Int = 0
     @State private var hundreds: Int = 0
     @State private var tens: Int = 0
     @State private var ones: Int = 0
-    
+
     @Environment(AppRouter.self) private var router
     
     var totalAmount: Double {
@@ -130,35 +131,48 @@ struct CreateBudgetForm: View {
             
             VStack(alignment: .leading) {
                 Button {
-                    var _ = BudgetService.createBudget(
-                        budgetName: budgetName,
-                        totalAmount: totalAmount,
-                        context: context
-                    )
-                    
+                    Task {
+                        isSaving = true
+                        defer { isSaving = false }
 
-                    // Clear form
-                    budgetName = ""
-                    thousands = 0
-                    hundreds = 0
-                    tens = 0
-                    ones = 0
-                    
-                    // Navigate back to the budget page
-                    router.budgetsPath = []
-                    
-                } label: {
-                    VStack(spacing: 8){
-                        Image(systemName: "plus.circle")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.white).opacity(0.7)
-                        Text("Create")
-                            .foregroundColor(.white).opacity(0.7)
-                            .font(.title2)
+                        // Insert into SwiftData first so the UI updates immediately
+                        let newBudget = BudgetService.createBudget(
+                            budgetName: budgetName,
+                            totalAmount: totalAmount,
+                            context: context
+                        )
+
+                        // Push to the server and save the returned serverId locally
+                        let sync = SyncService(context: context)
+                        try? await sync.createBudget(
+                            name: budgetName,
+                            totalAmount: totalAmount,
+                            localBudget: newBudget
+                        )
+
+                        // Clear form and navigate back
+                        budgetName = ""
+                        thousands = 0
+                        hundreds = 0
+                        tens = 0
+                        ones = 0
+                        router.budgetsPath = []
                     }
-                    
-                }.disabled(budgetName == "" || totalAmount <= 0)
+                } label: {
+                    VStack(spacing: 8) {
+                        if isSaving {
+                            ProgressView().tint(.white)
+                        } else {
+                            Image(systemName: "plus.circle")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(.white).opacity(0.7)
+                            Text("Create")
+                                .foregroundColor(.white).opacity(0.7)
+                                .font(.title2)
+                        }
+                    }
+                }.disabled(budgetName == "" || totalAmount <= 0 || isSaving)
                 
             }
         }.padding()

@@ -30,7 +30,11 @@ struct BudgetPageItem: View {
             // BACKGROUND DELETE BUTTON
             Button {
                 openBudgetId = nil
-                BudgetService.deleteBudget(budget: budget, context: context)
+                Task {
+                    // Delete from server first (uses serverId), then removes locally
+                    let sync = SyncService(context: context)
+                    try? await sync.deleteBudget(budget)
+                }
             } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "trash.fill")

@@ -14,7 +14,10 @@ struct BudgetPageView: View {
         
     @Environment(AppRouter.self) private var router
     
-    @Query var budgets: [Budget]
+    // Exclude the hidden unassigned budget — it's a catch-all for unbudgeted
+    // transactions and should never appear in the user-facing budget list.
+    @Query(filter: #Predicate<Budget> { $0.budgetName != "__unassigned__" })
+    var budgets: [Budget]
     
     @State private var openBudgetId: UUID? = nil
     

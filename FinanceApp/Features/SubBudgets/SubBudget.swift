@@ -11,6 +11,9 @@ import SwiftData
 @Model
 class SubBudget {
 
+    // The UUID assigned by the server. Nil until this sub-budget has been synced.
+    var serverId: UUID?
+
     var title: String = ""
     @Relationship(deleteRule: .cascade)
     var transactions: [Transaction] = []

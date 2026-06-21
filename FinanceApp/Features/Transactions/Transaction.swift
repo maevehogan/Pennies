@@ -11,7 +11,10 @@ import SwiftData
 @Model
 class Transaction: Identifiable {
     var id: UUID = UUID()
-    
+
+    // The UUID assigned by the server. Nil until this transaction has been synced.
+    var serverId: UUID?
+
     var location_spent: String
     var amount_spent: Double
     var date: Date

@@ -59,15 +59,17 @@ struct TransactionFilterSheet: View {
                 budgetSection
             }
             .navigationTitle("Filter Transactions")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button("Clear All") {
                         filters = TransactionFilters()
                     }
                     .disabled(!filters.isActive)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                         .bold()
                 }

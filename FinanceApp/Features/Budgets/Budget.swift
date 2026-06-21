@@ -11,7 +11,11 @@ import SwiftData
 @Model
 class Budget {
     var id = UUID()
-    
+
+    // The UUID assigned by the server. Nil until this budget has been synced.
+    // Used by SyncService to match local records to server records on subsequent syncs.
+    var serverId: UUID?
+
     var budgetName: String
     var totalAmount: Double
     

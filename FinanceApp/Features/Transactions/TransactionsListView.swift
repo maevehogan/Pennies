@@ -18,8 +18,9 @@ struct TransactionsListView: View {
     @State private var showMoveSheet: Bool = false
     @State private var transactionToMove: Transaction? = nil
     @State private var showFilterSheet: Bool = false
+    @State private var showCreateSheet: Bool = false
     @State private var filters = TransactionFilters()
-    
+
     let transactionPage: Bool
 
     // Lookup: transaction ID → the budget it lives in
@@ -83,8 +84,17 @@ struct TransactionsListView: View {
                         .foregroundStyle(.blue)
                     
                     if transactionPage {
-                        filterButton
-                            .padding(.trailing)
+                        HStack(spacing: 4) {
+                            Button {
+                                showCreateSheet = true
+                            } label: {
+                                Image(systemName: "plus.circle")
+                                    .font(.title2)
+                                    .foregroundStyle(.blue)
+                            }
+                            filterButton
+                        }
+                        .padding(.trailing)
                     }
                     
                     Spacer()
@@ -135,6 +145,11 @@ struct TransactionsListView: View {
                 }
             }
         )
+        .sheet(isPresented: $showCreateSheet) {
+            CreateTransactionView(close: { showCreateSheet = false })
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showFilterSheet) {
             TransactionFilterSheet(filters: $filters, budgets: budgets)
                 .presentationDetents([.medium, .large])

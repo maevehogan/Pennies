@@ -74,3 +74,10 @@ struct UpdateTransactionRequest: Encodable {
     let amountSpent: Double?
     let date: Date?
 }
+
+// MARK: - Plaid
+
+struct LinkedAccount: Decodable, Identifiable {
+    let id: UUID
+    let institutionName: String
+}

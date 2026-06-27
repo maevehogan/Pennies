@@ -85,4 +85,5 @@ extension RootTabView {
     return RootTabView(onLogout: { _ in })
         .environment(AppRouter())
         .modelContainer(container)
+        .environment(UserSession())
 }

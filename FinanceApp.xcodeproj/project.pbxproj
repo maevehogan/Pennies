@@ -7,20 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CA6F98E82FE84A8E004DACAB /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E22FE84A8E004DACAB /* APIClient.swift */; };
-		CA6F98E92FE84A8E004DACAB /* APIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E32FE84A8E004DACAB /* APIModels.swift */; };
-		CA6F98EA2FE84A8E004DACAB /* TransactionAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E62FE84A8E004DACAB /* TransactionAPI.swift */; };
-		CA6F98EB2FE84A8E004DACAB /* BudgetAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E52FE84A8E004DACAB /* BudgetAPI.swift */; };
-		CA6F98EC2FE84A8E004DACAB /* AuthAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F98E42FE84A8E004DACAB /* AuthAPI.swift */; };
+		CAA04DDE2FF0437100343DE5 /* LinkKit in Frameworks */ = {isa = PBXBuildFile; productRef = CAA04DDD2FF0437100343DE5 /* LinkKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CA2309CB2F09FC0E00F92F9F /* FinanceApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FinanceApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CA6F98E22FE84A8E004DACAB /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		CA6F98E32FE84A8E004DACAB /* APIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModels.swift; sourceTree = "<group>"; };
-		CA6F98E42FE84A8E004DACAB /* AuthAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPI.swift; sourceTree = "<group>"; };
-		CA6F98E52FE84A8E004DACAB /* BudgetAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetAPI.swift; sourceTree = "<group>"; };
-		CA6F98E62FE84A8E004DACAB /* TransactionAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionAPI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -49,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAA04DDE2FF0437100343DE5 /* LinkKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,7 +50,6 @@
 		CA2309C22F09FC0E00F92F9F = {
 			isa = PBXGroup;
 			children = (
-				CA6F98E72FE84A8E004DACAB /* Networking */,
 				CA2309CD2F09FC0E00F92F9F /* FinanceApp */,
 				CA2309CC2F09FC0E00F92F9F /* Products */,
 			);
@@ -70,18 +61,6 @@
 				CA2309CB2F09FC0E00F92F9F /* FinanceApp.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CA6F98E72FE84A8E004DACAB /* Networking */ = {
-			isa = PBXGroup;
-			children = (
-				CA6F98E22FE84A8E004DACAB /* APIClient.swift */,
-				CA6F98E32FE84A8E004DACAB /* APIModels.swift */,
-				CA6F98E42FE84A8E004DACAB /* AuthAPI.swift */,
-				CA6F98E52FE84A8E004DACAB /* BudgetAPI.swift */,
-				CA6F98E62FE84A8E004DACAB /* TransactionAPI.swift */,
-			);
-			path = Networking;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -104,6 +83,7 @@
 			);
 			name = FinanceApp;
 			packageProductDependencies = (
+				CAA04DDD2FF0437100343DE5 /* LinkKit */,
 			);
 			productName = "finance-app";
 			productReference = CA2309CB2F09FC0E00F92F9F /* FinanceApp.app */;
@@ -133,6 +113,9 @@
 			);
 			mainGroup = CA2309C22F09FC0E00F92F9F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CAA04DDC2FF0437100343DE5 /* XCRemoteSwiftPackageReference "plaid-link-ios-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CA2309CC2F09FC0E00F92F9F /* Products */;
 			projectDirPath = "";
@@ -158,11 +141,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA6F98E82FE84A8E004DACAB /* APIClient.swift in Sources */,
-				CA6F98E92FE84A8E004DACAB /* APIModels.swift in Sources */,
-				CA6F98EA2FE84A8E004DACAB /* TransactionAPI.swift in Sources */,
-				CA6F98EB2FE84A8E004DACAB /* BudgetAPI.swift in Sources */,
-				CA6F98EC2FE84A8E004DACAB /* AuthAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +367,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CAA04DDC2FF0437100343DE5 /* XCRemoteSwiftPackageReference "plaid-link-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/plaid/plaid-link-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CAA04DDD2FF0437100343DE5 /* LinkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAA04DDC2FF0437100343DE5 /* XCRemoteSwiftPackageReference "plaid-link-ios-spm" */;
+			productName = LinkKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CA2309C32F09FC0E00F92F9F /* Project object */;
 }

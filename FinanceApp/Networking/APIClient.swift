@@ -82,6 +82,12 @@ final class APIClient {
         return try await send(req, decoding: type)
     }
 
+    func postVoid<Body: Encodable>(to path: String, body: Body) async throws {
+        let req = try makeRequest(method: "POST", path: path, body: body)
+        let (data, response) = try await session.data(for: req)
+        try validateStatus(response, data: data)
+    }
+
     func put<Body: Encodable, Response: Decodable>(
         _ type: Response.Type,
         to path: String,

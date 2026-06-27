@@ -118,6 +118,10 @@ struct SettingsView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 40)
 
+                LinkedAccountsView()
+                    .padding(.horizontal, 32)
+                    .padding(.top, 24)
+
                 Spacer()
 
                 Button(role: .destructive) {

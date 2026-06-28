@@ -74,11 +74,11 @@ struct CreateBudgetForm: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text("$")
-                        .font(.system(size: 36, weight: .light, design: .rounded))
+                        .font(.system(size: 56, weight: .semibold, design: .rounded))
                         .foregroundStyle(Color.white.opacity(0.4))
 
                     TextField("0", text: $amountString)
-                        .keyboardType(.decimalPad)
+                        .keyboardType(.numberPad)
                         .font(.system(size: 56, weight: .semibold, design: .rounded))
                         .foregroundStyle(totalAmount > 0 ? Color.white : Color.white.opacity(0.25))
                         .multilineTextAlignment(.center)
@@ -110,8 +110,6 @@ struct CreateBudgetForm: View {
                         .transition(.opacity)
                 }
             }
-
-            Spacer()
 
             // Save button — matches CreateSubBudgetView style
             Button {

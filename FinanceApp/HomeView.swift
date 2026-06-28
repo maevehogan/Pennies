@@ -41,7 +41,7 @@ struct HomeView: View {
                         selectedBudgetIdx: $selectedBudgetIdx
                     )
 
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 10) {
                         HStack {
                             Text("Recent Transactions")
                                 .font(.headline)
@@ -56,13 +56,13 @@ struct HomeView: View {
                         .padding(.horizontal, 20)
 
                         TransactionsListView(transactionPage: false, swipeEnabled: false)
-                            .frame(height: 320)
+                            .frame(height: 280)
                             .clipped()
                             .onTapGesture { navTransactions() }
                     }
 
-                    // Bottom padding for floating tab bar
-                    Spacer().frame(height: 80)
+                    // Bottom padding — tab bar (~72pt) + system safe area (~34pt)
+                    Spacer().frame(height: 120)
                 }
             }
         }

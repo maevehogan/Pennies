@@ -25,6 +25,14 @@ struct SettingsView: View {
                     HStack {
                         GradientLabel("Settings", font: .title.bold())
                         Spacer()
+                        Button(role: .destructive) {
+                            session.logout(context: context)
+                            onLogout()
+                        } label: {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .font(.title3)
+                                .foregroundStyle(Color.red.opacity(0.7))
+                        }
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 16)
@@ -122,36 +130,9 @@ struct SettingsView: View {
                     .padding(.horizontal, 20)
 
                     // Linked Accounts
-                    VStack(alignment: .leading, spacing: 0) {
-                        SectionHeader(title: "Linked Accounts")
-                            .padding(.bottom, 10)
-                            .padding(.horizontal, 4)
-
-                        LinkedAccountsView()
-                            .glassCard(cornerRadius: 18)
-                    }
-                    .padding(.horizontal, 20)
-
-                    Spacer().frame(height: 16)
-
-                    // Logout
-                    Button(role: .destructive) {
-                        session.logout(context: context)
-                        onLogout()
-                    } label: {
-                        Text("Log Out")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(Color.red.opacity(0.15))
-                            .foregroundStyle(.red)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .strokeBorder(Color.red.opacity(0.3), lineWidth: 1)
-                            )
-                    }
-                    .padding(.horizontal, 20)
+                    LinkedAccountsView()
+                        .glassCard(cornerRadius: 18)
+                        .padding(.horizontal, 20)
 
                     Spacer().frame(height: 100)
                 }

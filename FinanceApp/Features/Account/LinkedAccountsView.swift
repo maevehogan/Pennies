@@ -33,8 +33,10 @@ struct LinkedAccountsView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Text("Connected Banks")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.white.opacity(0.4))
+                    .textCase(.uppercase)
+                    .tracking(1.2)
                 Spacer()
                 if !accounts.isEmpty {
                     Button {
@@ -43,21 +45,23 @@ struct LinkedAccountsView: View {
                         }
                     } label: {
                         Image(systemName: isEditing ? "checkmark.circle.fill" : "pencil.circle")
-                            .foregroundStyle(isEditing ? .green : .secondary)
+                            .foregroundStyle(isEditing ? Color.mintAccent : Color.white.opacity(0.4))
                             .font(.body)
                     }
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.bottom, 8)
-            .padding(.horizontal, 4)
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
 
             VStack(spacing: 0) {
                 if accounts.isEmpty && !isLoadingToken {
                     Text("No accounts connected yet.")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding()
+                        .foregroundStyle(Color.white.opacity(0.35))
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 12)
                 } else {
                     ForEach(accounts) { account in
                         HStack {
@@ -111,8 +115,6 @@ struct LinkedAccountsView: View {
                 }
                 .disabled(isLoadingToken)
             }
-            .background(Color.white.opacity(0.05))
-            .cornerRadius(12)
 
             if let errorMessage {
                 Text(errorMessage)

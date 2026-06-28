@@ -79,6 +79,10 @@ struct BudgetCard: View {
 
     var body: some View {
         ZStack(alignment: .leading) {
+            // Opaque base so the delete button doesn't bleed through the glass
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.appBg)
+
             // Filled progress bar
             GeometryReader { geo in
                 RoundedRectangle(cornerRadius: 16)

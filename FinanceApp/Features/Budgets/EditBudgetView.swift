@@ -13,26 +13,19 @@ struct EditBudgetView: View {
     
     @State private var selectedSpendingIdx: Int? = nil
     
-    let chartColors: [Color] = [.pink, .blue, .purple, .indigo, .mint, .cyan]
-    
     var body: some View {
         ZStack(alignment: .center) {
-            Color.black.ignoresSafeArea()
-            
-            VStack(spacing: 50) {
-                
-                Text("\(parentBudget.budgetName)")
-                    .font(.title)
-                    .bold()
-                    .foregroundColor(.white)
-                
-                
+            AppBackground()
+
+            VStack(spacing: 40) {
+                GlowText(parentBudget.budgetName, font: .title.bold(), glowColors: [.electricBlue, .hotPink])
+
                 BudgetChartView(
-                    parentBudget:
-                            .constant(parentBudget),
+                    parentBudget: .constant(parentBudget),
                     idx: $selectedSpendingIdx,
-                    chartColors: chartColors, chartLineWidth: 30,
-                    diameter: 300
+                    chartColors: appChartColors,
+                    chartLineWidth: 28,
+                    diameter: 280
                 )
 
                 CreateSubBudgetView(parentBudget: parentBudget)

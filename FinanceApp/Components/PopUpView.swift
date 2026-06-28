@@ -2,8 +2,6 @@
 //  PopUpView.swift
 //  FinanceApp
 //
-//  Created by Maeve Hogan on 5/19/26.
-//
 
 import SwiftUI
 
@@ -18,78 +16,70 @@ struct PopUpView: View {
 
     var body: some View {
         ZStack {
-            Color.blue.opacity(0.4).ignoresSafeArea()
+            Color.black.opacity(0.6).ignoresSafeArea()
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    close()
+                .onTapGesture { close() }
+
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Button(action: { close() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(Color.white.opacity(0.3))
+                    }
                 }
-            VStack(alignment: .center, spacing: 10) {
-                Text(title)
-                    .font(.title2)
-                    .foregroundColor(.white)
-                    .bold()
+
                 Text(message)
-                    .font(.body)
-                    .foregroundColor(.white.opacity(0.85))
-                
-                Button {
-                    buttonAction()
-                } label: {
+                    .font(.subheadline)
+                    .foregroundStyle(Color.white.opacity(0.7))
+
+                Button(action: buttonAction) {
                     Text(buttonTitle)
                         .font(.headline)
-                        .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(
+                                colors: [Color.electricBlue, Color.neonPurple],
+                                startPoint: .leading, endPoint: .trailing
+                            )
+                        )
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                
             }
-            .fixedSize(horizontal: false, vertical: true)
-            .padding()
-            .background(Color.black.opacity(0.85))
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .overlay(
-                VStack {
-                    
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            close()
-                        }) {
-                            Image(systemName: "x.circle")
-                                .font(.title2)
-                                .foregroundColor(.blue.opacity(0.8))
-                        }
-                    }
-                    Spacer()
-                }
-                    .padding(10)
-            )
-            .shadow(color: .white, radius: 10)
-            .padding(30)
-            .offset(x: 0, y: offsetY)
+            .padding(20)
+            .glassCard(cornerRadius: 20, accent: .electricBlue)
+            .shadow(color: Color.electricBlue.opacity(0.2), radius: 24, y: 8)
+            .padding(.horizontal, 28)
+            .offset(y: offsetY)
             .onAppear {
-                withAnimation(.spring()) {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.75)) {
                     offsetY = 0
                 }
             }
         }
     }
-    
+
     func close() {
-        withAnimation(.spring()) {
-            offsetY = 1000
-        }
-        // Notify parent to hide popup and/or dismiss sheet
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            closeAction()
-        }
+        withAnimation(.spring()) { offsetY = 1000 }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { closeAction() }
     }
 }
 
 #Preview {
-    PopUpView(title: "Add transaction to Sub-Budget?", message: "Are you sure you want to add this transaction to this sub-budget?", buttonTitle: "OK", buttonAction: {
-        print("Button tapped")
-    }, closeAction: { })
+    ZStack {
+        AppBackground()
+        PopUpView(
+            title: "Move Transaction",
+            message: "Are you sure you want to move this transaction?",
+            buttonTitle: "Confirm",
+            buttonAction: {},
+            closeAction: {}
+        )
+    }
 }

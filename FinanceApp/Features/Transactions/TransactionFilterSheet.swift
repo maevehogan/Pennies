@@ -2,8 +2,6 @@
 //  TransactionFilterSheet.swift
 //  FinanceApp
 //
-//  Created by Maeve Hogan on 6/19/26.
-//
 
 import SwiftUI
 
@@ -43,7 +41,6 @@ struct TransactionFilterSheet: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    // Local state for custom date pickers — synced into filters on change
     @State private var customStart: Date = Calendar.current.startOfDay(for: Date())
     @State private var customEnd: Date = Date()
 
@@ -54,75 +51,92 @@ struct TransactionFilterSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                dateSection
-                budgetSection
+            ZStack {
+                AppBackground()
+
+                Form {
+                    dateSection
+                    budgetSection
+                }
+                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Filter Transactions")
-            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            #endif
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Clear All") {
-                        filters = TransactionFilters()
-                    }
-                    .disabled(!filters.isActive)
+                    Button("Clear All") { filters = TransactionFilters() }
+                        .foregroundStyle(filters.isActive ? Color.hotPink : Color.white.opacity(0.3))
+                        .disabled(!filters.isActive)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
+                        .foregroundStyle(Color.electricBlue)
                         .bold()
                 }
             }
         }
+        .presentationBackground(Color.appBg)
     }
 
     // MARK: Date section
 
     private var dateSection: some View {
-        Section("Date Range") {
-            dateRow(label: "All Time", isSelected: filters.dateFilter == .all) {
+        Section {
+            filterRow(label: "All Time", isSelected: filters.dateFilter == .all) {
                 filters.dateFilter = .all
             }
-            dateRow(label: "Today", isSelected: filters.dateFilter == .today) {
+            filterRow(label: "Today", isSelected: filters.dateFilter == .today) {
                 filters.dateFilter = .today
             }
-            dateRow(label: "Last 7 Days", isSelected: filters.dateFilter == .thisWeek) {
+            filterRow(label: "Last 7 Days", isSelected: filters.dateFilter == .thisWeek) {
                 filters.dateFilter = .thisWeek
             }
-            dateRow(label: "This Month", isSelected: filters.dateFilter == .thisMonth) {
+            filterRow(label: "This Month", isSelected: filters.dateFilter == .thisMonth) {
                 filters.dateFilter = .thisMonth
             }
-            dateRow(label: "Custom Range", isSelected: isCustomDateSelected) {
+            filterRow(label: "Custom Range", isSelected: isCustomDateSelected) {
                 filters.dateFilter = .custom(start: customStart, end: customEnd)
             }
 
             if isCustomDateSelected {
                 DatePicker("Start", selection: $customStart, displayedComponents: .date)
+                    .foregroundStyle(.white)
+                    .tint(Color.electricBlue)
                     .onChange(of: customStart) {
                         filters.dateFilter = .custom(start: customStart, end: customEnd)
                     }
                 DatePicker("End", selection: $customEnd, in: customStart..., displayedComponents: .date)
+                    .foregroundStyle(.white)
+                    .tint(Color.electricBlue)
                     .onChange(of: customEnd) {
                         filters.dateFilter = .custom(start: customStart, end: customEnd)
                     }
             }
+        } header: {
+            Text("Date Range")
+                .foregroundStyle(Color.white.opacity(0.4))
+                .font(.caption.weight(.semibold))
+                .tracking(1)
         }
+        .listRowBackground(Color.white.opacity(0.07))
+        .listRowSeparatorTint(Color.white.opacity(0.1))
     }
 
     // MARK: Budget section
 
     private var budgetSection: some View {
-        Section("Budget") {
-            budgetRow(label: "All Budgets", isSelected: filters.budgetFilter == .all) {
+        Section {
+            filterRow(label: "All Budgets", isSelected: filters.budgetFilter == .all) {
                 filters.budgetFilter = .all
             }
-            budgetRow(label: "Unassigned", isSelected: filters.budgetFilter == .unassigned) {
+            filterRow(label: "Unassigned", isSelected: filters.budgetFilter == .unassigned) {
                 filters.budgetFilter = .unassigned
             }
             ForEach(budgets, id: \.id) { budget in
                 if budget.budgetName != "__unassigned__" {
-                    budgetRow(
+                    filterRow(
                         label: budget.budgetName,
                         isSelected: filters.budgetFilter == .specific(budgetId: budget.id)
                     ) {
@@ -130,30 +144,26 @@ struct TransactionFilterSheet: View {
                     }
                 }
             }
+        } header: {
+            Text("Budget")
+                .foregroundStyle(Color.white.opacity(0.4))
+                .font(.caption.weight(.semibold))
+                .tracking(1)
         }
+        .listRowBackground(Color.white.opacity(0.07))
+        .listRowSeparatorTint(Color.white.opacity(0.1))
     }
 
-    // MARK: Row helpers
-
-    private func dateRow(label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+    private func filterRow(label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
-                Text(label).foregroundColor(.primary)
+                Text(label)
+                    .foregroundStyle(Color.white.opacity(0.85))
                 Spacer()
                 if isSelected {
-                    Image(systemName: "checkmark").foregroundColor(.blue)
-                }
-            }
-        }
-    }
-
-    private func budgetRow(label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack {
-                Text(label).foregroundColor(.primary)
-                Spacer()
-                if isSelected {
-                    Image(systemName: "checkmark").foregroundColor(.blue)
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(Color.electricBlue)
+                        .font(.subheadline.weight(.semibold))
                 }
             }
         }

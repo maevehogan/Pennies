@@ -1,15 +1,5 @@
 // CreateTransactionView.swift
-// Sheet for manually creating a transaction.
-//
-// The user picks a destination budget, then optionally a named sub-budget
-// (defaults to the main bucket if none is chosen), enters the merchant name,
-// amount, and date, then taps Save.
-//
-// Flow:
-//   1. Insert into SwiftData immediately so the UI updates without waiting
-//   2. Push to the server via SyncService to get a serverId saved back locally
-//
-// The `close` callback is called on success or cancel to dismiss the sheet.
+// FinanceApp
 
 import SwiftUI
 import SwiftData
@@ -30,15 +20,10 @@ struct CreateTransactionView: View {
 
     private var amount: Double { Double(amountString) ?? 0 }
 
-    // The visible budgets — excludes the hidden unassigned budget from the picker
     private var visibleBudgets: [Budget] {
         budgets.filter { $0.budgetName != unassignedBudgetName }
     }
 
-    // The destination sub-budget:
-    //   - Named sub-budget if the user picked one
-    //   - Main bucket of the selected budget if no sub-budget chosen
-    //   - Main bucket of the hidden unassigned budget if no budget chosen at all
     private var destination: SubBudget? {
         if let sub = selectedSubBudget { return sub }
         if let budget = selectedBudget { return budget.mainSubBudget }
@@ -52,23 +37,18 @@ struct CreateTransactionView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.black.ignoresSafeArea()
+                AppBackground()
 
                 Form {
-                    // MARK: Budget picker
-                    Section("Budget") {
+                    Section {
                         Picker("Budget", selection: $selectedBudget) {
                             Text("No budget (unassigned)").tag(nil as Budget?)
                             ForEach(visibleBudgets) { budget in
                                 Text(budget.budgetName).tag(budget as Budget?)
                             }
                         }
-                        .onChange(of: selectedBudget) {
-                            // Reset sub-budget selection when budget changes
-                            selectedSubBudget = nil
-                        }
+                        .onChange(of: selectedBudget) { selectedSubBudget = nil }
 
-                        // Only show sub-budget picker if the budget has named sub-budgets
                         if let budget = selectedBudget, !budget.namedSubBudgets.isEmpty {
                             Picker("Category", selection: $selectedSubBudget) {
                                 Text("\(budget.budgetName) (general)").tag(nil as SubBudget?)
@@ -77,54 +57,71 @@ struct CreateTransactionView: View {
                                 }
                             }
                         }
+                    } header: {
+                        Text("Budget")
+                            .foregroundStyle(Color.white.opacity(0.4))
+                            .font(.caption.weight(.semibold))
+                            .tracking(1)
                     }
+                    .listRowBackground(Color.white.opacity(0.07))
+                    .listRowSeparatorTint(Color.white.opacity(0.1))
 
-                    // MARK: Transaction details
-                    Section("Details") {
+                    Section {
                         TextField("Merchant / description", text: $locationSpent)
+                            .foregroundStyle(.white)
 
                         HStack {
-                            Text("$")
-                                .foregroundStyle(.secondary)
+                            Text("$").foregroundStyle(Color.white.opacity(0.4))
                             TextField("0.00", text: $amountString)
                                 .keyboardType(.decimalPad)
+                                .foregroundStyle(.white)
                         }
 
                         DatePicker("Date", selection: $date, displayedComponents: .date)
+                            .foregroundStyle(.white)
+                            .tint(Color.electricBlue)
+                    } header: {
+                        Text("Details")
+                            .foregroundStyle(Color.white.opacity(0.4))
+                            .font(.caption.weight(.semibold))
+                            .tracking(1)
                     }
+                    .listRowBackground(Color.white.opacity(0.07))
+                    .listRowSeparatorTint(Color.white.opacity(0.1))
 
-                    // Inline error if save fails
                     if let errorMessage {
                         Section {
                             Text(errorMessage)
                                 .foregroundStyle(.red)
                                 .font(.caption)
                         }
+                        .listRowBackground(Color.red.opacity(0.08))
                     }
                 }
                 .scrollContentBackground(.hidden)
             }
             .navigationTitle("New Transaction")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.appBg, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { close() }
+                        .foregroundStyle(Color.white.opacity(0.6))
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     if isSaving {
-                        ProgressView()
+                        ProgressView().tint(Color.electricBlue)
                     } else {
-                        Button("Save") {
-                            Task { await save() }
-                        }
-                        .disabled(!canSave)
+                        Button("Save") { Task { await save() } }
+                            .foregroundStyle(canSave ? Color.electricBlue : Color.white.opacity(0.3))
+                            .disabled(!canSave)
                     }
                 }
             }
         }
+        .presentationBackground(Color.appBg)
     }
-
-    // MARK: - Save
 
     private func save() async {
         guard let dest = destination else { return }
@@ -132,32 +129,20 @@ struct CreateTransactionView: View {
         errorMessage = nil
         defer { isSaving = false }
 
-        // Insert locally first so the UI updates immediately
         let tx = Transaction(location_spent: locationSpent.trimmingCharacters(in: .whitespaces), amount_spent: amount)
         tx.date = date
         dest.transactions.append(tx)
         context.insert(tx)
 
-        do {
-            try context.save()
-        } catch {
+        do { try context.save() } catch {
             errorMessage = "Failed to save locally: \(error.localizedDescription)"
             return
         }
 
-        // Push to the server and store the returned serverId
         let sync = SyncService(context: context)
         do {
-            try await sync.createTransaction(
-                locationSpent: tx.location_spent,
-                amountSpent: tx.amount_spent,
-                date: tx.date,
-                in: dest,
-                local: tx
-            )
+            try await sync.createTransaction(locationSpent: tx.location_spent, amountSpent: tx.amount_spent, date: tx.date, in: dest, local: tx)
         } catch {
-            // The transaction is already saved locally — it just won't have a serverId
-            // until the next sync. Not a fatal error, but surface it for debugging.
             errorMessage = "Saved locally but server sync failed: \(error.localizedDescription)"
             return
         }
@@ -169,6 +154,5 @@ struct CreateTransactionView: View {
 #Preview {
     let container = try! ModelContainer(for: Budget.self, SubBudget.self, Transaction.self)
     SampleDataSeeder.seed(context: ModelContext(container))
-    return CreateTransactionView(close: {})
-        .modelContainer(container)
+    return CreateTransactionView(close: {}).modelContainer(container)
 }

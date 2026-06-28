@@ -13,15 +13,13 @@ struct CreateBudgetView: View {
     
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            AppBackground()
             VStack(spacing: 10) {
-                Text("Create a Budget")
-                    .foregroundStyle(.white)
-                    .font(.largeTitle)
+                GradientLabel("Create a Budget", font: .title.bold())
                 CreateBudgetForm()
             }
-            
         }
+        .presentationBackground(Color.appBg)
         
     }
     
@@ -166,9 +164,9 @@ struct CreateBudgetForm: View {
                             Image(systemName: "plus.circle")
                                 .resizable()
                                 .frame(width: 50, height: 50)
-                                .foregroundColor(.white).opacity(0.7)
+                                .foregroundStyle(Color.electricBlue)
                             Text("Create")
-                                .foregroundColor(.white).opacity(0.7)
+                                .foregroundStyle(Color.electricBlue)
                                 .font(.title2)
                         }
                     }

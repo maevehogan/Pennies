@@ -20,7 +20,7 @@ struct HomeView: View {
             AppBackground()
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
+                VStack(spacing: 8) {
                     // Header
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {

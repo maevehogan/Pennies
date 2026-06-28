@@ -20,27 +20,42 @@ struct BudgetChartView: View {
     
     var body: some View {
         ZStack {
+            // Background track — matches the "create budget" gradient ring
+            Circle()
+                .trim(from: 0, to: 1)
+                .stroke(
+                    LinearGradient(
+                        colors: [Color.hotPink.opacity(0.25), Color.electricBlue.opacity(0.15)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(lineWidth: chartLineWidth, lineCap: .round)
+                )
+                .frame(width: diameter, height: diameter)
+                .rotationEffect(Angle(degrees: -90))
+
+            // Subbudget segments — semi-transparent so the glow shows through
             ForEach(Array(parentBudget.subBudgets.enumerated()), id: \.element.id) { index, spending in
                 let segmentColor = chartColors[index % chartColors.count]
-                let chartWidth = idx == index ? chartLineWidth * 1.25 : chartLineWidth
-                    
+                let isSelected = idx == index
+                let chartWidth = isSelected ? chartLineWidth * 1.25 : chartLineWidth
+
                 Circle()
-                    .trim(from: startTrim(at: index), to: endTrim(at:index))
-                    .stroke(segmentColor, style: StrokeStyle(lineWidth: chartWidth, lineCap: .butt))
+                    .trim(from: startTrim(at: index), to: endTrim(at: index))
+                    .stroke(
+                        segmentColor.opacity(isSelected ? 0.85 : 0.55),
+                        style: StrokeStyle(lineWidth: chartWidth, lineCap: .round)
+                    )
                     .frame(width: diameter, height: diameter)
                     .rotationEffect(Angle(degrees: -90))
                     .zIndex(1)
+                    .animation(.spring(response: 0.3), value: isSelected)
                     .onTapGesture {
                         withAnimation {
                             idx = (idx == index) ? nil : index
                         }
                     }
             }
-            Circle()
-                .trim(from: 0, to: 1)
-                .stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: chartLineWidth, lineCap: .round))
-                .frame(width: diameter, height: diameter)
-                .rotationEffect(Angle(degrees: -90))
             VStack(alignment: .center) {
                 if let index = idx {
                     Text("\(parentBudget.subBudgets[index].title)")

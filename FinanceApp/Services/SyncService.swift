@@ -187,6 +187,8 @@ struct SyncService {
         tx.location_spent = response.locationSpent
         tx.amount_spent = response.amountSpent
         tx.date = response.date
+        tx.source = response.source
+        tx.institutionName = response.institutionName
 
         // Always re-link — handles both new records and existing ones that lost their relationship
         if let sub, !sub.transactions.contains(where: { $0.id == tx.id }) {

@@ -5,14 +5,26 @@
 
 import Foundation
 
-let sampleTransactions: [Transaction] = [
-    Transaction(location_spent: "Starbucks", amount_spent: 4.50),
-    Transaction(location_spent: "Amazon", amount_spent: 23.99),
-    Transaction(location_spent: "Grocery Store", amount_spent: 76.32),
-    Transaction(location_spent: "Gas Station", amount_spent: 40.00),
-    Transaction(location_spent: "Restaurant", amount_spent: 55.20),
-    Transaction(location_spent: "Hydro Quebec", amount_spent: 15.00),
-]
+let sampleTransactions: [Transaction] = {
+    let manual1 = Transaction(location_spent: "Starbucks", amount_spent: 4.50)
+    let manual2 = Transaction(location_spent: "Amazon", amount_spent: 23.99)
+
+    let chase1 = Transaction(location_spent: "Grocery Store", amount_spent: 76.32)
+    chase1.source = "plaid"
+    chase1.institutionName = "Chase"
+
+    let chase2 = Transaction(location_spent: "Gas Station", amount_spent: 40.00)
+    chase2.source = "plaid"
+    chase2.institutionName = "Chase"
+
+    let td1 = Transaction(location_spent: "Restaurant", amount_spent: 55.20)
+    td1.source = "plaid"
+    td1.institutionName = "TD Bank"
+
+    let manual3 = Transaction(location_spent: "Hydro Quebec", amount_spent: 15.00)
+
+    return [manual1, manual2, chase1, chase2, td1, manual3]
+}()
 
 
 // Create sample sub-budgets

@@ -67,8 +67,31 @@ struct TransactionsListView: View {
                 }
             }()
 
-            return passesBudget && passesDate
+            let passesSource: Bool = {
+                switch filters.sourceFilter {
+                case .all:    return true
+                case .manual: return tx.source == "manual"
+                case .institution(let name):
+                    if name == "Connected Account" {
+                        return tx.source == "plaid" && tx.institutionName == nil
+                    }
+                    return tx.institutionName == name
+                }
+            }()
+
+            return passesBudget && passesDate && passesSource
         }
+    }
+
+    // Unique institution names from synced Plaid transactions.
+    // Falls back to a generic "Connected Account" entry if any Plaid transactions
+    // lack an institution name (e.g. synced before the backend change was deployed).
+    private var institutionNames: [String] {
+        var seen = Set<String>()
+        var names = transactions.compactMap { $0.institutionName }.filter { seen.insert($0).inserted }
+        let hasUnnamedPlaid = transactions.contains { $0.source == "plaid" && $0.institutionName == nil }
+        if hasUnnamedPlaid { names.append("Connected Account") }
+        return names
     }
 
     var body: some View {
@@ -162,7 +185,7 @@ struct TransactionsListView: View {
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showFilterSheet) {
-            TransactionFilterSheet(filters: $filters, budgets: budgets)
+            TransactionFilterSheet(filters: $filters, budgets: budgets, institutionNames: institutionNames)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
@@ -212,6 +235,11 @@ struct TransactionsListView: View {
                     chip(label: dateChipLabel) {
                         filters.dateFilter = .all
                     }
+                }
+                if case .manual = filters.sourceFilter {
+                    chip(label: "Manual") { filters.sourceFilter = .all }
+                } else if case .institution(let name) = filters.sourceFilter {
+                    chip(label: name) { filters.sourceFilter = .all }
                 }
             }
         }

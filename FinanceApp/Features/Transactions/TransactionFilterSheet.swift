@@ -23,13 +23,20 @@ struct TransactionFilters {
         case custom(start: Date, end: Date)
     }
 
+    enum SourceFilter: Equatable {
+        case all
+        case manual
+        case institution(String)
+    }
+
     var budgetFilter: BudgetFilter = .all
     var dateFilter: DateFilter = .all
+    var sourceFilter: SourceFilter = .all
 
-    var isActive: Bool { budgetFilter != .all || dateFilter != .all }
+    var isActive: Bool { budgetFilter != .all || dateFilter != .all || sourceFilter != .all }
 
     var activeCount: Int {
-        (budgetFilter != .all ? 1 : 0) + (dateFilter != .all ? 1 : 0)
+        (budgetFilter != .all ? 1 : 0) + (dateFilter != .all ? 1 : 0) + (sourceFilter != .all ? 1 : 0)
     }
 }
 
@@ -38,6 +45,7 @@ struct TransactionFilters {
 struct TransactionFilterSheet: View {
     @Binding var filters: TransactionFilters
     let budgets: [Budget]
+    let institutionNames: [String]
 
     @Environment(\.dismiss) private var dismiss
 
@@ -57,6 +65,7 @@ struct TransactionFilterSheet: View {
                 Form {
                     dateSection
                     budgetSection
+                    sourceSection
                 }
                 .scrollContentBackground(.hidden)
             }
@@ -154,6 +163,31 @@ struct TransactionFilterSheet: View {
         .listRowSeparatorTint(Color.white.opacity(0.1))
     }
 
+    // MARK: Source section
+
+    private var sourceSection: some View {
+        Section {
+            filterRow(label: "All Sources", isSelected: filters.sourceFilter == .all) {
+                filters.sourceFilter = .all
+            }
+            filterRow(label: "Manual", isSelected: filters.sourceFilter == .manual) {
+                filters.sourceFilter = .manual
+            }
+            ForEach(institutionNames, id: \.self) { name in
+                filterRow(label: name, isSelected: filters.sourceFilter == .institution(name)) {
+                    filters.sourceFilter = .institution(name)
+                }
+            }
+        } header: {
+            Text("Source")
+                .foregroundStyle(Color.white.opacity(0.4))
+                .font(.caption.weight(.semibold))
+                .tracking(1)
+        }
+        .listRowBackground(Color.white.opacity(0.07))
+        .listRowSeparatorTint(Color.white.opacity(0.1))
+    }
+
     private func filterRow(label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
@@ -171,5 +205,5 @@ struct TransactionFilterSheet: View {
 }
 
 #Preview {
-    TransactionFilterSheet(filters: .constant(TransactionFilters()), budgets: sampleBudgets)
+    TransactionFilterSheet(filters: .constant(TransactionFilters()), budgets: sampleBudgets, institutionNames: ["Chase", "Wells Fargo"])
 }

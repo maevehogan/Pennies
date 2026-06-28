@@ -43,6 +43,8 @@ struct TransactionResponse: Decodable {
     let date: Date
     // "manual" or "plaid"
     let source: String
+    // Institution name (e.g. "Chase") for Plaid-imported transactions; nil for manual
+    let institutionName: String?
 }
 
 // MARK: - Request bodies (sent to the server)

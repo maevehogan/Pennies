@@ -18,6 +18,10 @@ class Transaction: Identifiable {
     var location_spent: String
     var amount_spent: Double
     var date: Date
+    // "manual" or "plaid" — set from server response; defaults to "manual" for locally-created transactions
+    var source: String = "manual"
+    // Institution name for Plaid-imported transactions (e.g. "Chase"); nil for manual
+    var institutionName: String?
 
     init(location_spent: String, amount_spent: Double) {
         self.location_spent = location_spent

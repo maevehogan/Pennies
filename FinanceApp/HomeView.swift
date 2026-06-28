@@ -57,6 +57,7 @@ struct HomeView: View {
 
                         TransactionsListView(transactionPage: false, swipeEnabled: false)
                             .frame(height: 320)
+                            .clipped()
                             .onTapGesture { navTransactions() }
                     }
 

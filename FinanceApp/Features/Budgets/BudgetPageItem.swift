@@ -15,6 +15,7 @@ struct BudgetPageItem: View {
 
     @State var offsetX: CGFloat = 0
     @Binding var openBudgetId: UUID?
+    @State private var showDeleteConfirm = false
 
     @Environment(\.modelContext) private var context
 
@@ -24,11 +25,7 @@ struct BudgetPageItem: View {
         ZStack(alignment: .trailing) {
             // Delete button
             Button {
-                openBudgetId = nil
-                Task {
-                    let sync = SyncService(context: context)
-                    try? await sync.deleteBudget(budget)
-                }
+                showDeleteConfirm = true
             } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "trash.fill").font(.title3)
@@ -76,6 +73,20 @@ struct BudgetPageItem: View {
                 )
         }
         .frame(height: itemHeight)
+        .alert("Delete \"\(budget.budgetName)\"?", isPresented: $showDeleteConfirm) {
+            Button("Delete", role: .destructive) {
+                withAnimation(.spring(response: 0.3)) { openBudgetId = nil }
+                Task {
+                    let sync = SyncService(context: context)
+                    try? await sync.deleteBudget(budget)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                withAnimation(.spring(response: 0.3)) { offsetX = 0; openBudgetId = nil }
+            }
+        } message: {
+            Text("This will permanently delete the budget and all its transactions.")
+        }
     }
 }
 

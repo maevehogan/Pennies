@@ -37,10 +37,12 @@ enum APIError: Error, LocalizedError {
 final class APIClient {
     static let shared = APIClient()
 
-    // For the iOS Simulator use your Mac's local IP (not localhost — the simulator
-    // has its own network stack). For a physical device, use the same IP.
-    // Change to your production URL before shipping.
-    private let baseURL = "http://192.168.1.27:8080"
+    // Point this at your running FinanceAppServer instance.
+    // Simulator: use your Mac's LAN IP (not "localhost" — the simulator has its own network stack).
+    //   Find it in System Settings → Wi-Fi → Details, or run `ipconfig getifaddr en0` in Terminal.
+    // Physical device: same LAN IP as above, or your server's public URL.
+    // Production: replace with your hosted server URL (e.g. "https://api.yourapp.com").
+    private let baseURL = "http://localhost:8080"
 
     private let session: URLSession
     private let decoder: JSONDecoder

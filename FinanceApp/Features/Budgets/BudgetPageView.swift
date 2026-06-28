@@ -71,6 +71,15 @@ struct BudgetPageView: View {
                     Spacer().frame(height: 100)
                 }
             }
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    if openBudgetId != nil {
+                        withAnimation(.spring(response: 0.3)) {
+                            openBudgetId = nil
+                        }
+                    }
+                }
+            )
         }
     }
 }

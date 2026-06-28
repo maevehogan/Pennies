@@ -110,10 +110,17 @@ struct BudgetPage: View {
     let budget: Budget
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 24) {
             Text(budget.budgetName)
-                .font(.title2.bold())
-                .foregroundStyle(.white)
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.75), Color.electricBlue.opacity(0.6)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .tracking(0.5)
 
             BudgetChartView(
                 parentBudget: .constant(budget),
@@ -132,10 +139,17 @@ struct CreateBudgetPage: View {
     let router: AppRouter
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 24) {
             Text("New Budget")
-                .font(.title2.bold())
-                .foregroundStyle(.white)
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.75), Color.hotPink.opacity(0.6)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .tracking(0.5)
 
             ZStack {
                 Circle()

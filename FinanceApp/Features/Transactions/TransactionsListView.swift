@@ -139,8 +139,10 @@ struct TransactionsListView: View {
                         }
                     }
                 }
+                .frame(maxHeight: .infinity)
             }
         }
+        .frame(maxHeight: .infinity)
         .contentShape(Rectangle())
         .simultaneousGesture(
             TapGesture().onEnded {

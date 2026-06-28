@@ -20,6 +20,7 @@ struct TransactionsItemView: View {
     @State var offsetX: CGFloat = 0
     @Binding var openTransactionId: UUID?
 
+    var swipeEnabled: Bool = true
     var onMoreTapped: (() -> Void)? = nil
     var onDeleteTapped: (() -> Void)? = nil
 
@@ -88,7 +89,7 @@ struct TransactionsItemView: View {
                 .simultaneousGesture(
                     DragGesture()
                         .onChanged { value in
-                            // Only allow dragging left, and only if horizontal drag is dominant
+                            guard swipeEnabled else { return }
                             let translation = value.translation
                             if abs(translation.width) > abs(translation.height) && translation.width < 0 {
                                 withAnimation(.spring) {
@@ -97,10 +98,9 @@ struct TransactionsItemView: View {
                             }
                         }
                         .onEnded { value in
-                            // Only trigger if horizontal drag is dominant
+                            guard swipeEnabled else { return }
                             if abs(value.translation.width) > abs(value.translation.height) {
                                 withAnimation(.spring(response: 0.3)) {
-                                    // Snap open if dragged far enough
                                     if value.translation.width < -40 {
                                         offsetX = -maxSwipe
                                         openTransactionId = transaction.id

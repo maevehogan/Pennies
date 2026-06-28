@@ -21,6 +21,7 @@ struct TransactionsListView: View {
     @State private var filters = TransactionFilters()
 
     let transactionPage: Bool
+    var swipeEnabled: Bool = true
 
     // Lookup: transaction ID → the budget it lives in
     private var transactionBudgetMap: [UUID: UUID] {
@@ -28,6 +29,7 @@ struct TransactionsListView: View {
         for budget in budgets {
             for sub in budget.subBudgets {
                 for tx in sub.transactions {
+                    if budget.budgetName == "__unassigned__" { continue }
                     map[tx.id] = budget.id
                 }
             }
@@ -114,6 +116,7 @@ struct TransactionsListView: View {
                             TransactionsItemView(
                                 transaction: transaction,
                                 openTransactionId: $openTransactionId,
+                                swipeEnabled: swipeEnabled,
                                 onMoreTapped: {
                                     transactionToMove = transaction
                                 },

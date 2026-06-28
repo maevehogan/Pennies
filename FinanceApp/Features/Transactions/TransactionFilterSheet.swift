@@ -121,11 +121,13 @@ struct TransactionFilterSheet: View {
                 filters.budgetFilter = .unassigned
             }
             ForEach(budgets, id: \.id) { budget in
-                budgetRow(
-                    label: budget.budgetName,
-                    isSelected: filters.budgetFilter == .specific(budgetId: budget.id)
-                ) {
-                    filters.budgetFilter = .specific(budgetId: budget.id)
+                if budget.budgetName != "__unassigned__" {
+                    budgetRow(
+                        label: budget.budgetName,
+                        isSelected: filters.budgetFilter == .specific(budgetId: budget.id)
+                    ) {
+                        filters.budgetFilter = .specific(budgetId: budget.id)
+                    }
                 }
             }
         }

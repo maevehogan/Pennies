@@ -14,7 +14,9 @@ struct BudgetItemsListView: View {
     @Binding var openTransactionId: UUID?
 
     let chartColors: [Color]
-    
+
+    @State private var transactionToMove: Transaction? = nil
+
     var body: some View {
         // Choose which transactions to show based on selection
         let displayedTransactions: [Transaction] = {
@@ -36,7 +38,10 @@ struct BudgetItemsListView: View {
                         TransactionsItemView(
                             transaction: tx.element,
                             itemColor: idx != nil ? chartColors[idx! % chartColors.count] : .white,
-                            openTransactionId: $openTransactionId
+                            openTransactionId: $openTransactionId,
+                            onMoreTapped: {
+                                transactionToMove = tx.element
+                            }
                         )
                     }
                 }
@@ -47,6 +52,11 @@ struct BudgetItemsListView: View {
                     .font(.title3)
                     .italic()
             }
+        }
+        .sheet(item: $transactionToMove, onDismiss: { openTransactionId = nil }) { tx in
+            MoveTransactionView(close: { transactionToMove = nil }, transaction: tx)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
     }
 }

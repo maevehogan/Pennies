@@ -64,67 +64,70 @@ struct MoveTransactionView: View {
                         .cornerRadius(10)
                 }
 
-
                 List {
-                ForEach(visibleBudgets, id: \.id) { budget in
-                    Section {
-                        BudgetRow(budget: budget, isExpanded: expandedBudgets.contains(budget.id)) {
-                            toggleExpanded(budget: budget)
+                    ForEach(visibleBudgets, id: \.id) { budget in
+                        Section {
+                            BudgetRow(budget: budget, isExpanded: expandedBudgets.contains(budget.id)) {
+                                toggleExpanded(budget: budget)
+                            }
+                            if expandedBudgets.contains(budget.id) {
+                                // Always-present option: add to the budget itself (no sub-budget)
+                                Button {
+                                    pendingDestination = .budgetItself(budget)
+                                    showPopup = true
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "tray")
+                                        Text("Add to \"\(budget.budgetName)\" ")
+                                            .font(.subheadline)
+                                    }
+                                    .foregroundColor(.blue)
+                                }
+                                .padding(.leading, 24)
+
+                                ForEach(budget.namedSubBudgets, id: \.id) { subBudget in
+                                    Button {
+                                        pendingDestination = .subBudget(subBudget)
+                                        showPopup = true
+                                    } label: {
+                                        Text(subBudget.title)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    .padding(.leading, 24)
+                                }
+                            }
                         }
-                        if expandedBudgets.contains(budget.id) {
-                            // Always-present option: add to the budget itself (no sub-budget)
+                    }
+                    Section {
+                        if let budget = currentBudget {
                             Button {
-                                pendingDestination = .budgetItself(budget)
+                                pendingDestination = .unassign(fromBudgetName: budget.budgetName)
                                 showPopup = true
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: "tray")
-                                    Text("Add to \"\(budget.budgetName)\" ")
+                                    Text("Remove from \"\(budget.budgetName)\"")
                                         .font(.subheadline)
+                                    Spacer()
+                                    Image(systemName: "minus.circle")
+                                    
                                 }
-                                .foregroundColor(.blue)
-                            }
-                            .padding(.leading, 24)
-
-                            ForEach(budget.namedSubBudgets, id: \.id) { subBudget in
-                                Button {
-                                    pendingDestination = .subBudget(subBudget)
-                                    showPopup = true
-                                } label: {
-                                    Text(subBudget.title)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-                                .padding(.leading, 24)
+                                .foregroundColor(.red)
+                                .padding(.vertical, 8)
                             }
                         }
                     }
                 }
-            }
-            .listStyle(InsetListStyle())
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.gray.opacity(0.5), lineWidth: 1)
-            )
-            .padding(.horizontal)
+                .listStyle(InsetListStyle())
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.5), lineWidth: 1)
+                )
+                .padding(.horizontal)
+                
             }
             .padding(.top, 20)
-
-            if let budget = currentBudget {
-                Button {
-                    pendingDestination = .unassign(fromBudgetName: budget.budgetName)
-                    showPopup = true
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "minus.circle")
-                        Text("Remove from \"\(budget.budgetName)\"")
-                            .font(.subheadline)
-                    }
-                    .foregroundColor(.red)
-                    .padding(.vertical, 8)
-                }
-            }
-
+            
             if showPopup, let destination = pendingDestination {
                 PopUpView(
                     title: "Move Transaction",

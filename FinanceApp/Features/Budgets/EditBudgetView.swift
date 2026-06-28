@@ -17,19 +17,20 @@ struct EditBudgetView: View {
         ZStack(alignment: .center) {
             AppBackground()
 
-            VStack(spacing: 40) {
+            VStack(spacing: 20) {
                 GlowText(parentBudget.budgetName, font: .title.bold(), glowColors: [.electricBlue, .hotPink])
+                    .padding(.top, 8)
 
                 BudgetChartView(
                     parentBudget: .constant(parentBudget),
                     idx: $selectedSpendingIdx,
                     chartColors: appChartColors,
-                    chartLineWidth: 28,
-                    diameter: 280
+                    chartLineWidth: 18,
+                    diameter: 180
                 )
 
                 CreateSubBudgetView(parentBudget: parentBudget)
-                .frame(height: 220)
+                    .frame(height: 220)
             }
             
         }

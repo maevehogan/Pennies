@@ -13,26 +13,24 @@ struct RootTabView: View {
     let onLogout: (ModelContext) -> Void
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // All tabs kept alive via opacity so NavigationStack state persists
-            ZStack {
-                HomeTab()
-                    .opacity(router.selectedTab == .home ? 1 : 0)
-                    .allowsHitTesting(router.selectedTab == .home)
+        ZStack {
+            HomeTab()
+                .opacity(router.selectedTab == .home ? 1 : 0)
+                .allowsHitTesting(router.selectedTab == .home)
 
-                BudgetsTab()
-                    .opacity(router.selectedTab == .budgets ? 1 : 0)
-                    .allowsHitTesting(router.selectedTab == .budgets)
+            BudgetsTab()
+                .opacity(router.selectedTab == .budgets ? 1 : 0)
+                .allowsHitTesting(router.selectedTab == .budgets)
 
-                TransactionsTab()
-                    .opacity(router.selectedTab == .transactions ? 1 : 0)
-                    .allowsHitTesting(router.selectedTab == .transactions)
+            TransactionsTab()
+                .opacity(router.selectedTab == .transactions ? 1 : 0)
+                .allowsHitTesting(router.selectedTab == .transactions)
 
-                SettingsTab(onLogout: { onLogout(context) })
-                    .opacity(router.selectedTab == .settings ? 1 : 0)
-                    .allowsHitTesting(router.selectedTab == .settings)
-            }
-
+            SettingsTab(onLogout: { onLogout(context) })
+                .opacity(router.selectedTab == .settings ? 1 : 0)
+                .allowsHitTesting(router.selectedTab == .settings)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             FloatingTabBar()
         }
         .task {
@@ -95,7 +93,7 @@ private struct FloatingTabBar: View {
                 )
         )
         .padding(.horizontal, 16)
-        .padding(.bottom, 4)
+        .padding(.bottom, 2)
         .shadow(color: Color.black.opacity(0.6), radius: 16, y: 4)
     }
 }

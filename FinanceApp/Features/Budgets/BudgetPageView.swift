@@ -1,8 +1,6 @@
 //
-//  BudgetList.swift
+//  BudgetPageView.swift
 //  FinanceApp
-//
-//  Created by Maeve Hogan on 1/26/26.
 //
 
 import SwiftUI
@@ -11,64 +9,67 @@ import SwiftData
 
 struct BudgetPageView: View {
     let navBudgetDetail: (_ budget: Budget) -> Void
-        
+
     @Environment(AppRouter.self) private var router
-    
-    // Exclude the hidden unassigned budget — it's a catch-all for unbudgeted
-    // transactions and should never appear in the user-facing budget list.
+
     @Query(filter: #Predicate<Budget> { $0.budgetName != "__unassigned__" })
     var budgets: [Budget]
-    
+
     @State private var openBudgetId: UUID? = nil
-    
+
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            AppBackground()
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    withAnimation {
-                        openBudgetId = nil
-                    }
+                    withAnimation { openBudgetId = nil }
                 }
-            
-            VStack {
-                Text("Your Budgets")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .bold()
-                    .padding(.top, 30)
-                VStack {
-                        
-                    ForEach(budgets) { budget in
-                        BudgetPageItem(
-                            budget: budget, openBudgetId: $openBudgetId,
-        
-                        )
-                        .onTapGesture {
-                                navBudgetDetail(budget)
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 16) {
+                    HStack {
+                        GradientLabel("Budgets", font: .title.bold())
+                        Spacer()
+                        Button(action: { navCreateBudget(router: router) }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(Color.electricBlue)
                         }
-                        .padding(5)
                     }
-                    
-                    Button(action: {
-                        navCreateBudget(router: router)
-                    }) {
-                        Image(systemName: "plus.circle")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.white).opacity(0.7)
-                            .frame(width: 350, height: 75)
-                            .overlay(RoundedRectangle(cornerRadius: 15)
-                                .stroke(Color.white.opacity(0.7), lineWidth: 2)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+
+                    VStack(spacing: 10) {
+                        ForEach(budgets) { budget in
+                            BudgetPageItem(
+                                budget: budget,
+                                openBudgetId: $openBudgetId
                             )
+                            .onTapGesture { navBudgetDetail(budget) }
+                            .padding(.horizontal, 20)
+                        }
+
+                        // Add budget placeholder row
+                        Button(action: { navCreateBudget(router: router) }) {
+                            HStack {
+                                Image(systemName: "plus")
+                                    .font(.headline)
+                                Text("Add Budget")
+                                    .font(.headline)
+                            }
+                            .foregroundStyle(
+                                LinearGradient(colors: [.electricBlue, .hotPink], startPoint: .leading, endPoint: .trailing)
+                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .glassCard(cornerRadius: 16, accent: .electricBlue)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 4)
                     }
-                    
-                    
-                    Spacer()
-                        
+
+                    Spacer().frame(height: 100)
                 }
-                    
-                    
             }
         }
     }
@@ -80,12 +81,9 @@ struct BudgetPageView: View {
         SubBudget.self,
         Transaction.self
     )
-    // Seed the preview container
     SampleDataSeeder.seed(context: ModelContext(container))
-    
-        
-    return BudgetPageView(navBudgetDetail: {budgetID in })
+
+    return BudgetPageView(navBudgetDetail: { _ in })
         .modelContainer(container)
         .environment(AppRouter())
 }
-

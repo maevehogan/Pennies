@@ -1,77 +1,98 @@
-//  ContentView.swift
-//  finance-app
-//
-//  Created by Maeve Hogan on 1/3/26.
-//
+//  HomeView.swift
+//  FinanceApp
 
 import SwiftUI
 import SwiftData
 
 struct HomeView: View {
     @Environment(AppRouter.self) private var router
-    
+
     @Query(filter: #Predicate<Budget> { $0.budgetName != "__unassigned__" })
     var budgets: [Budget]
-    
+
     let navBudgetDetail: (Budget) -> Void
     let navTransactions: () -> Void
-    
+
     @State private var selectedBudgetIdx: Int = 0
-    
+
     var body: some View {
         ZStack {
-            Color.black
-                .ignoresSafeArea()
-            VStack (spacing: 20) {
-                Text("Welcome Back!")
-                    .font(.largeTitle)
-                    .foregroundColor(.white)
-                    .bold()
-                HomeChartsView(
-                    navBudgetDetail: navBudgetDetail,
-                    budgets: budgets,
-                    router: router,
-                    selectedBudgetIdx: $selectedBudgetIdx,
-                    )
-                
-                TransactionsListView(transactionPage: false, swipeEnabled: false)
-                    .onTapGesture {
-                        navTransactions()
+            AppBackground()
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    // Header
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Welcome Back")
+                                .font(.subheadline)
+                                .foregroundStyle(Color.white.opacity(0.5))
+                            GradientLabel("Dashboard", font: .title.bold())
+                        }
+                        Spacer()
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+
+                    HomeChartsView(
+                        navBudgetDetail: navBudgetDetail,
+                        budgets: budgets,
+                        router: router,
+                        selectedBudgetIdx: $selectedBudgetIdx
+                    )
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("Recent Transactions")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            Spacer()
+                            Button(action: navTransactions) {
+                                Text("See All")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color.electricBlue)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+
+                        TransactionsListView(transactionPage: false, swipeEnabled: false)
+                            .frame(height: 320)
+                            .onTapGesture { navTransactions() }
+                    }
+
+                    // Bottom padding for floating tab bar
+                    Spacer().frame(height: 80)
+                }
             }
-                
         }
-        
     }
 }
+
+// MARK: - Charts Carousel
 
 struct HomeChartsView: View {
     let navBudgetDetail: (Budget) -> Void
     let budgets: [Budget]
     let router: AppRouter
-    
+
     @Binding var selectedBudgetIdx: Int
 
     var body: some View {
-        VStack {
+        VStack(spacing: 8) {
             TabView(selection: $selectedBudgetIdx) {
                 ForEach(Array(budgets.enumerated()), id: \.element.id) { index, budget in
                     BudgetPage(budget: budget)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        navBudgetDetail(budget)
-                    }
-                    .tag(index)
+                        .contentShape(Rectangle())
+                        .onTapGesture { navBudgetDetail(budget) }
+                        .tag(index)
+                        .padding(.horizontal, 20)
                 }
-                
+
                 CreateBudgetPage(router: router)
                     .contentShape(Rectangle())
-                    .onTapGesture {
-                        navCreateBudget(router: router)
-                    }
+                    .onTapGesture { navCreateBudget(router: router) }
                     .tag(budgets.count)
-                    
-
+                    .padding(.horizontal, 20)
             }
             .frame(height: 400)
             #if os(iOS) || os(tvOS) || os(watchOS)
@@ -83,79 +104,71 @@ struct HomeChartsView: View {
     }
 }
 
+// MARK: - Budget Card (Home Carousel)
+
 struct BudgetPage: View {
     let budget: Budget
-    let chartColors: [Color] = [.pink, .blue, .purple, .indigo]
 
-    let chartLineWidth: CGFloat = 20
-    let diameter: CGFloat = 250
-    
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black)
-                
-
-            VStack {
+            VStack(spacing: 16) {
                 Text(budget.budgetName)
-                    .font(.headline)
-                    .foregroundColor(.white)
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
 
                 BudgetChartView(
                     parentBudget: .constant(budget),
                     idx: .constant(nil),
-                    chartColors: chartColors,
-                    chartLineWidth: chartLineWidth,
-                    diameter: diameter
-                ).padding()
+                    chartColors: appChartColors,
+                    chartLineWidth: 22,
+                    diameter: 240
+                )
+                .padding(.horizontal)
             }
-            
+            .padding(20)
         }
+        .glassCard(cornerRadius: 24, accent: .electricBlue)
+        .shadow(color: Color.electricBlue.opacity(0.15), radius: 20, y: 8)
     }
 }
 
 struct CreateBudgetPage: View {
-    let chartLineWidth: CGFloat = 20
-    let diameter: CGFloat = 250
-    
     let router: AppRouter
-    
+
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black)
-            
-            VStack {
-                Text("Create New Budget")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                
+            VStack(spacing: 20) {
+                Text("New Budget")
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
+
                 ZStack {
-                    Button(action: {
-                        navCreateBudget(router: router)
-                    }) {
-                        Image(systemName: "plus.circle")
-                            .resizable()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(.white).opacity(0.7)
-                    }
                     Circle()
                         .trim(from: 0, to: 1)
-                        .stroke(Color.pink.opacity(0.3), style: StrokeStyle(lineWidth: chartLineWidth, lineCap: .round))
-                        .frame(width: diameter, height: diameter)
-                        .rotationEffect(Angle(degrees: -90))
-                        .padding()
+                        .stroke(
+                            LinearGradient(colors: [.hotPink.opacity(0.4), .electricBlue.opacity(0.2)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                            style: StrokeStyle(lineWidth: 22, lineCap: .round)
+                        )
+                        .frame(width: 200, height: 200)
+
+                    Button(action: { navCreateBudget(router: router) }) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 40, weight: .light))
+                            .foregroundStyle(
+                                LinearGradient(colors: [.electricBlue, .hotPink], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            )
+                    }
                 }
+                .padding()
             }
-            
+            .padding(20)
         }
+        .glassCard(cornerRadius: 24, accent: .hotPink)
+        .shadow(color: Color.hotPink.opacity(0.1), radius: 20, y: 8)
     }
 }
 
-
-
 #Preview {
-    HomeView(navBudgetDetail: {_ in }, navTransactions: {})
+    HomeView(navBudgetDetail: { _ in }, navTransactions: {})
         .environment(AppRouter())
-        
 }

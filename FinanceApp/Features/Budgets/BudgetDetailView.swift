@@ -1,8 +1,5 @@
-//  BudgetView.swift
+//  BudgetDetailView.swift
 //  FinanceApp
-//
-//  Created by Maeve Hogan on 1/11/26.
-//
 
 import SwiftUI
 import SwiftData
@@ -13,56 +10,59 @@ struct BudgetDetailView: View {
     @State private var selectedSpendingIdx: Int? = nil
     @State private var openTransactionId: UUID? = nil
 
-    let chartColors: [Color] = [.pink, .blue, .purple, .indigo, .mint, .cyan]
-
     var body: some View {
         ZStack(alignment: .center) {
-            Color.black.ignoresSafeArea()
+            AppBackground()
 
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 50) {
-                    HStack {
-                        Text("\(budget.budgetName)")
-                            .font(.title)
-                            .bold()
-                            .foregroundColor(.white)
+                VStack(spacing: 40) {
+                    HStack(alignment: .center) {
+                        Text(budget.budgetName)
+                            .font(.title.bold())
+                            .foregroundStyle(.white)
 
-                        SubBudgetDropdown(parentBudget: budget, subBudgets: budget.subBudgets, subBudgetIdx: $selectedSpendingIdx, colors: chartColors)
-                            .padding(.leading, 10)
+                        SubBudgetDropdown(
+                            parentBudget: budget,
+                            subBudgets: budget.subBudgets,
+                            subBudgetIdx: $selectedSpendingIdx,
+                            colors: appChartColors
+                        )
+                        .padding(.leading, 10)
+                    }
+                    .zIndex(100)
 
-                    }.zIndex(100)
                     BudgetChartView(
                         parentBudget: .constant(budget),
                         idx: $selectedSpendingIdx,
-                        chartColors: chartColors, chartLineWidth: 30,
-                        diameter: 300
+                        chartColors: appChartColors,
+                        chartLineWidth: 28,
+                        diameter: 280
                     )
 
                     BudgetItemsListView(
                         spendings: .constant(budget.subBudgets),
                         idx: $selectedSpendingIdx,
                         openTransactionId: $openTransactionId,
-                        chartColors: chartColors
+                        chartColors: appChartColors
                     )
                 }
-                .padding(.bottom, 32)
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 100)
             }
         }
         .contentShape(Rectangle())
         .simultaneousGesture(
             TapGesture().onEnded {
                 if openTransactionId != nil {
-                    withAnimation(.spring(response: 0.3)) {
-                        openTransactionId = nil
-                    }
+                    withAnimation(.spring(response: 0.3)) { openTransactionId = nil }
                 }
             }
         )
     }
 }
-    
+
 #Preview {
     BudgetDetailView(budget: sampleBudgets[0])
         .environment(AppRouter())
 }
-

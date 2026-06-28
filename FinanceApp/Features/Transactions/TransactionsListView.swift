@@ -73,34 +73,32 @@ struct TransactionsListView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            if transactionPage { AppBackground() }
 
             VStack(spacing: 0) {
                 // Header row
                 HStack(alignment: .center) {
-                    // Invisible spacer to balance the filter button
-                    Spacer()
-                    Text("Recent Transactions")
-                        .font(.title)
-                        .foregroundStyle(.blue)
-                    
                     if transactionPage {
-                        HStack(spacing: 4) {
+                        GradientLabel("Transactions", font: .title.bold())
+                        Spacer()
+                        HStack(spacing: 8) {
                             Button {
                                 showCreateSheet = true
                             } label: {
-                                Image(systemName: "plus.circle")
+                                Image(systemName: "plus.circle.fill")
                                     .font(.title2)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(Color.electricBlue)
                             }
                             filterButton
                         }
-                        .padding(.trailing)
+                    } else {
+                        // Embedded in home — no header needed (HomeView provides it)
+                        EmptyView()
                     }
-                    
-                    Spacer()
                 }
-                .padding(.top, 8)
+                .padding(.horizontal, 20)
+                .padding(.top, transactionPage ? 16 : 0)
+                .padding(.bottom, 8)
 
                 // Active filter summary chips
                 if filters.isActive {
@@ -134,6 +132,10 @@ struct TransactionsListView: View {
                                 .font(.subheadline)
                                 .italic()
                                 .padding(.top, 50)
+                        }
+
+                        if transactionPage {
+                            Spacer().frame(height: 100)
                         }
                     }
                 }
@@ -175,14 +177,14 @@ struct TransactionsListView: View {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "line.3.horizontal.decrease.circle")
                     .font(.title2)
-                    .foregroundStyle(filters.isActive ? .blue : .gray)
+                    .foregroundStyle(filters.isActive ? Color.electricBlue : Color.white.opacity(0.4))
                 if filters.activeCount > 0 {
                     Text("\(filters.activeCount)")
                         .font(.caption2)
                         .bold()
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                         .padding(3)
-                        .background(Color.blue)
+                        .background(Color.electricBlue)
                         .clipShape(Circle())
                         .offset(x: 8, y: -8)
                 }
@@ -249,10 +251,10 @@ struct TransactionsListView: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background(Color.blue.opacity(0.35))
+        .background(Color.electricBlue.opacity(0.2))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.blue.opacity(0.6), lineWidth: 1)
+            Capsule()
+                .strokeBorder(Color.electricBlue.opacity(0.5), lineWidth: 1)
         )
         .clipShape(Capsule())
     }

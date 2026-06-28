@@ -2,8 +2,6 @@
 //  RootTabView.swift
 //  FinanceApp
 //
-//  Created by Maeve Hogan on 1/27/26.
-//
 
 import SwiftUI
 import Observation
@@ -15,61 +13,129 @@ struct RootTabView: View {
     let onLogout: (ModelContext) -> Void
 
     var body: some View {
-        TabView(selection: tabSelection()) {
+        ZStack(alignment: .bottom) {
+            // All tabs kept alive via opacity so NavigationStack state persists
+            ZStack {
                 HomeTab()
-                    .tabItem {
-                        Label("Home", systemImage: "house")
-                    }
-                    .tag(TabItem.home)
+                    .opacity(router.selectedTab == .home ? 1 : 0)
+                    .allowsHitTesting(router.selectedTab == .home)
 
                 BudgetsTab()
-                    .tabItem {
-                        Label("Budgets", systemImage: "chart.pie")
-                    }
-                    .tag(TabItem.budgets)
+                    .opacity(router.selectedTab == .budgets ? 1 : 0)
+                    .allowsHitTesting(router.selectedTab == .budgets)
 
                 TransactionsTab()
-                    .tabItem {
-                        Label("Transactions", systemImage: "list.bullet")
-                    }
-                    .tag(TabItem.transactions)
+                    .opacity(router.selectedTab == .transactions ? 1 : 0)
+                    .allowsHitTesting(router.selectedTab == .transactions)
 
                 SettingsTab(onLogout: { onLogout(context) })
-                    .tabItem {
-                        Label("Settings", systemImage: "gearshape")
-                    }
-                    .tag(TabItem.settings)
+                    .opacity(router.selectedTab == .settings ? 1 : 0)
+                    .allowsHitTesting(router.selectedTab == .settings)
             }
-            .task {
-                let sync = SyncService(context: context)
-                try? await sync.syncBudgets()
-                await BudgetService.ensureUnassignedBudget(context: context)
-            }
-    }
-}
 
-
-extension RootTabView {
-    private func tabSelection() -> Binding<TabItem> {
-        Binding {
-            router.selectedTab
-        } set: { newTab in
-            if router.selectedTab == newTab {
-                switch newTab {
-                case .home:
-                    router.homePath = []
-                case .budgets:
-                    router.budgetsPath = []
-                case .transactions:
-                    router.transactionsPath = []
-                case .settings:
-                    router.settingsPath = []
-                }
-            }
-            router.selectedTab = newTab
+            FloatingTabBar()
+        }
+        .task {
+            let sync = SyncService(context: context)
+            try? await sync.syncBudgets()
+            await BudgetService.ensureUnassignedBudget(context: context)
         }
     }
 }
+
+// MARK: - Floating Tab Bar
+
+private struct FloatingTabBar: View {
+    @Environment(AppRouter.self) private var router
+
+    private let tabs: [(item: TabItem, icon: String, label: String)] = [
+        (.home,         "house.fill",         "Home"),
+        (.budgets,      "chart.pie.fill",      "Budgets"),
+        (.transactions, "list.bullet",         "Transactions"),
+        (.settings,     "gearshape.fill",      "Settings"),
+    ]
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(tabs, id: \.item) { tab in
+                TabBarButton(
+                    icon: tab.icon,
+                    label: tab.label,
+                    isSelected: router.selectedTab == tab.item
+                ) {
+                    if router.selectedTab == tab.item {
+                        // Tap active tab → pop to root
+                        switch tab.item {
+                        case .home:         router.homePath = []
+                        case .budgets:      router.budgetsPath = []
+                        case .transactions: router.transactionsPath = []
+                        case .settings:     router.settingsPath = []
+                        }
+                    } else {
+                        router.selectedTab = tab.item
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 28)
+                .fill(Color.white.opacity(0.07))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 28)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.18), Color.white.opacity(0.05)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+        )
+        .padding(.horizontal, 24)
+        .padding(.bottom, 20)
+        .shadow(color: Color.black.opacity(0.5), radius: 20, y: 8)
+    }
+}
+
+private struct TabBarButton: View {
+    let icon: String
+    let label: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .symbolEffect(.bounce, value: isSelected)
+                Text(label)
+                    .font(.system(size: 10, weight: .medium))
+            }
+            .foregroundStyle(
+                isSelected
+                    ? LinearGradient(colors: [.electricBlue, .hotPink], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    : LinearGradient(colors: [Color.white.opacity(0.4), Color.white.opacity(0.4)], startPoint: .top, endPoint: .bottom)
+            )
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .background(
+                Group {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.electricBlue.opacity(0.12))
+                    }
+                }
+            )
+        }
+        .buttonStyle(.plain)
+        .animation(.spring(response: 0.3), value: isSelected)
+    }
+}
+
 
 #Preview {
     let container = try! ModelContainer(
@@ -78,10 +144,9 @@ extension RootTabView {
         Transaction.self
     )
     let context = ModelContext(container)
-    // Reset and seed the preview container
     SampleDataSeeder.reset(context: context)
     SampleDataSeeder.seed(context: context)
-    
+
     return RootTabView(onLogout: { _ in })
         .environment(AppRouter())
         .modelContainer(container)

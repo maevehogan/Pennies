@@ -75,6 +75,18 @@ struct TransactionsListView: View {
         ZStack {
             if transactionPage { AppBackground() }
 
+            // Tap background to close any open swipe card — sits below ScrollView
+            // so it doesn't interfere with scroll gestures
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if openTransactionId != nil {
+                        withAnimation(.spring(response: 0.3)) {
+                            openTransactionId = nil
+                        }
+                    }
+                }
+
             VStack(spacing: 0) {
                 // Header row
                 HStack(alignment: .center) {
@@ -143,16 +155,6 @@ struct TransactionsListView: View {
             }
         }
         .frame(maxHeight: .infinity)
-        .contentShape(Rectangle())
-        .simultaneousGesture(
-            TapGesture().onEnded {
-                if openTransactionId != nil {
-                    withAnimation(.spring(response: 0.3)) {
-                        openTransactionId = nil
-                    }
-                }
-            }
-        )
         .sheet(isPresented: $showCreateSheet) {
             CreateTransactionView(close: { showCreateSheet = false })
                 .presentationDetents([.large])

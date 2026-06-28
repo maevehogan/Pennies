@@ -2,190 +2,169 @@
 //  CreateBudgetView.swift
 //  FinanceApp
 //
-//  Created by Maeve Hogan on 5/9/26.
-//
 
 import SwiftUI
 import Foundation
 import SwiftData
 
 struct CreateBudgetView: View {
-    
     var body: some View {
         ZStack {
             AppBackground()
-            VStack(spacing: 10) {
+            VStack(spacing: 0) {
                 GradientLabel("Create a Budget", font: .title.bold())
+                    .padding(.top, 20)
                 CreateBudgetForm()
             }
         }
         .presentationBackground(Color.appBg)
-        
     }
-    
-    
 }
 
 struct CreateBudgetForm: View {
     @Environment(\.modelContext) private var context
+    @Environment(AppRouter.self) private var router
 
     @State private var budgetName: String = ""
+    @State private var amountString: String = ""
     @State private var isSaving = false
 
-    @State private var thousands: Int = 0
-    @State private var hundreds: Int = 0
-    @State private var tens: Int = 0
-    @State private var ones: Int = 0
+    private var totalAmount: Double { Double(amountString) ?? 0 }
+    private var canSave: Bool { !budgetName.trimmingCharacters(in: .whitespaces).isEmpty && totalAmount > 0 }
 
-    @Environment(AppRouter.self) private var router
-    
-    var totalAmount: Double {
-        return Double(thousands + hundreds + tens + ones)
-    }
-    
     var body: some View {
-        VStack(alignment: .center, spacing: 20) {
-            // Budget Title VStack
-            VStack (alignment: .leading, spacing: 20) {
-                TextField(
-                    "",
-                    text: $budgetName,
-                    prompt: Text("Budget Name")
-                        .foregroundColor(.white.opacity(0.5))
+        VStack(spacing: 32) {
+            // Budget name field
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Budget Name")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.white.opacity(0.4))
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+
+                TextField("", text: $budgetName,
+                    prompt: Text("e.g. Groceries, Rent…")
+                        .foregroundColor(Color.white.opacity(0.3))
                 )
-                .padding()
-                .background(Color.white.opacity(0.15))
-                .cornerRadius(10)
-                .foregroundColor(.white)
-                .font(.title2)
+                .foregroundStyle(.white)
+                .font(.title3.weight(.medium))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(Color.white.opacity(0.07))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(
+                            budgetName.isEmpty
+                                ? Color.white.opacity(0.1)
+                                : Color.electricBlue.opacity(0.4),
+                            lineWidth: 1
+                        )
+                )
+                .animation(.easeInOut(duration: 0.2), value: budgetName.isEmpty)
             }
-            .padding(.vertical, 30)
-            .padding(.horizontal)
-            
-            // Total Amount VStack
-            VStack (alignment: .center, spacing: 8) {
-                
+
+            // Venmo-style amount input
+            VStack(spacing: 8) {
                 Text("Total Amount")
-                    .foregroundColor(.gray)
-                    .font(.title2)
-                
-                Text("$\(totalAmount, specifier: "%.2f")")
-                    .foregroundColor(.white)
-                    .font(.largeTitle)
-                    .contentTransition(.numericText())
-                    .animation(.spring(response: 0.2, dampingFraction: 0.8), value: totalAmount)
-                    
-                
-                HStack {
-                    VStack {
-                        Text("\(thousands)")
-                            .foregroundColor(.white)
-                            .font(.title2)
-                        Stepper("", value: $thousands, in: 0...50000, step: 1000)
-                            .foregroundColor(.white)
-                            .labelsHidden()
-                        Text("Thousands")
-                            .foregroundColor(.gray)
-                    }
-                    
-                    VStack {
-                        Text("\(hundreds)")
-                            .foregroundColor(.white)
-                            .font(.title2)
-                        Stepper("", value: $hundreds, in: 0...900, step: 100)
-                            .foregroundColor(.white)
-                            .labelsHidden()
-                        Text("Hundreds")
-                            .foregroundColor(.gray)
-                    }
-                    
-                    VStack {
-                        Text("\(tens)")
-                            .foregroundColor(.white)
-                            .font(.title2)
-                        Stepper("", value: $tens, in: 0...90, step: 10)
-                            .foregroundColor(.white)
-                            .labelsHidden()
-                        Text("Tens")
-                            .foregroundColor(.gray)
-                    }
-                    
-                    VStack {
-                        Text("\(ones)")
-                            .foregroundColor(.white)
-                            .font(.title2)
-                        Stepper("", value: $ones, in: 0...9, step: 1)
-                            .foregroundColor(.white)
-                            .labelsHidden()
-                        Text("Ones")
-                            .foregroundColor(.gray)
-                    }
-                            
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.white.opacity(0.4))
+                    .textCase(.uppercase)
+                    .tracking(1.2)
+
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text("$")
+                        .font(.system(size: 36, weight: .light, design: .rounded))
+                        .foregroundStyle(Color.white.opacity(0.4))
+
+                    TextField("0", text: $amountString)
+                        .keyboardType(.decimalPad)
+                        .font(.system(size: 56, weight: .semibold, design: .rounded))
+                        .foregroundStyle(totalAmount > 0 ? Color.white : Color.white.opacity(0.25))
+                        .multilineTextAlignment(.center)
+                        .fixedSize()
+                        .contentTransition(.numericText())
+                        .animation(.spring(response: 0.2), value: amountString)
                 }
-                
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.white.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .strokeBorder(
+                                    totalAmount > 0
+                                        ? LinearGradient(colors: [Color.electricBlue.opacity(0.5), Color.hotPink.opacity(0.3)], startPoint: .leading, endPoint: .trailing)
+                                        : LinearGradient(colors: [Color.white.opacity(0.08), Color.white.opacity(0.08)], startPoint: .leading, endPoint: .trailing),
+                                    lineWidth: 1.5
+                                )
+                        )
+                )
+                .animation(.easeInOut(duration: 0.25), value: totalAmount > 0)
+
+                if totalAmount > 0 {
+                    Text(totalAmount, format: .currency(code: "USD"))
+                        .font(.caption)
+                        .foregroundStyle(Color.white.opacity(0.35))
+                        .transition(.opacity)
+                }
             }
-            
+
             Spacer()
-            
-            VStack(alignment: .leading) {
-                Button {
-                    Task {
-                        isSaving = true
-                        defer { isSaving = false }
 
-                        // Insert into SwiftData first so the UI updates immediately
-                        let newBudget = BudgetService.createBudget(
-                            budgetName: budgetName,
-                            totalAmount: totalAmount,
-                            context: context
-                        )
+            // Save button — matches CreateSubBudgetView style
+            Button {
+                Task {
+                    isSaving = true
+                    defer { isSaving = false }
 
-                        // Push to the server and save the returned serverId locally
-                        let sync = SyncService(context: context)
-                        try? await sync.createBudget(
-                            name: budgetName,
-                            totalAmount: totalAmount,
-                            localBudget: newBudget
-                        )
+                    let newBudget = BudgetService.createBudget(
+                        budgetName: budgetName.trimmingCharacters(in: .whitespaces),
+                        totalAmount: totalAmount,
+                        context: context
+                    )
+                    let sync = SyncService(context: context)
+                    try? await sync.createBudget(name: budgetName, totalAmount: totalAmount, localBudget: newBudget)
 
-                        // Clear form and navigate back
-                        budgetName = ""
-                        thousands = 0
-                        hundreds = 0
-                        tens = 0
-                        ones = 0
-                        router.budgetsPath = []
+                    budgetName = ""
+                    amountString = ""
+                    router.budgetsPath = []
+                }
+            } label: {
+                Group {
+                    if isSaving {
+                        ProgressView().tint(.white)
+                    } else {
+                        Text("Create Budget")
+                            .font(.headline)
                     }
-                } label: {
-                    VStack(spacing: 8) {
-                        if isSaving {
-                            ProgressView().tint(.white)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    Group {
+                        if canSave {
+                            LinearGradient(colors: [.electricBlue, .neonPurple], startPoint: .leading, endPoint: .trailing)
                         } else {
-                            Image(systemName: "plus.circle")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundStyle(Color.electricBlue)
-                            Text("Create")
-                                .foregroundStyle(Color.electricBlue)
-                                .font(.title2)
+                            Color.white.opacity(0.06)
                         }
                     }
-                }.disabled(budgetName == "" || totalAmount <= 0 || isSaving)
-                
+                )
+                .foregroundStyle(canSave ? Color.white : Color.white.opacity(0.3))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
-        }.padding()
+            .disabled(!canSave || isSaving)
+            .animation(.easeInOut(duration: 0.2), value: canSave)
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 32)
+        .padding(.bottom, 24)
     }
 }
 
-
 #Preview {
-    let container = try! ModelContainer(
-        for: Budget.self,
-        SubBudget.self,
-        Transaction.self
-    )
-    // Optionally seed with sample data
-    // SampleDataSeeder.seed(context: ModelContext(container))
+    let container = try! ModelContainer(for: Budget.self, SubBudget.self, Transaction.self)
     return CreateBudgetView()
         .modelContainer(container)
         .environment(AppRouter())

@@ -31,14 +31,9 @@ struct LinkedAccountsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Text("Connected Banks")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(Color.white.opacity(0.4))
-                    .textCase(.uppercase)
-                    .tracking(1.2)
-                Spacer()
-                if !accounts.isEmpty {
+            if !accounts.isEmpty {
+                HStack {
+                    Spacer()
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             isEditing.toggle()
@@ -50,10 +45,10 @@ struct LinkedAccountsView: View {
                     }
                     .buttonStyle(.plain)
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 4)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 14)
-            .padding(.bottom, 10)
 
             VStack(spacing: 0) {
                 if accounts.isEmpty && !isLoadingToken {

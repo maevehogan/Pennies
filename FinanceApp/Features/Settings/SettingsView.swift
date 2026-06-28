@@ -130,9 +130,15 @@ struct SettingsView: View {
                     .padding(.horizontal, 20)
 
                     // Linked Accounts
-                    LinkedAccountsView()
-                        .glassCard(cornerRadius: 18)
-                        .padding(.horizontal, 20)
+                    VStack(alignment: .leading, spacing: 0) {
+                        SectionHeader(title: "Connected Accounts")
+                            .padding(.bottom, 10)
+                            .padding(.horizontal, 4)
+
+                        LinkedAccountsView()
+                            .glassCard(cornerRadius: 18)
+                    }
+                    .padding(.horizontal, 20)
 
                     Spacer().frame(height: 100)
                 }

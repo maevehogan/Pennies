@@ -150,7 +150,6 @@ struct CreateBudgetPage: View {
                         )
                 }
             }
-            .padding()
         }
         .padding(20)
     }

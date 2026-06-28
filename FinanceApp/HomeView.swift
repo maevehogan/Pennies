@@ -110,25 +110,21 @@ struct BudgetPage: View {
     let budget: Budget
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 16) {
-                Text(budget.budgetName)
-                    .font(.title2.bold())
-                    .foregroundStyle(.white)
+        VStack(spacing: 16) {
+            Text(budget.budgetName)
+                .font(.title2.bold())
+                .foregroundStyle(.white)
 
-                BudgetChartView(
-                    parentBudget: .constant(budget),
-                    idx: .constant(nil),
-                    chartColors: appChartColors,
-                    chartLineWidth: 22,
-                    diameter: 240
-                )
-                .padding(.horizontal)
-            }
-            .padding(20)
+            BudgetChartView(
+                parentBudget: .constant(budget),
+                idx: .constant(nil),
+                chartColors: appChartColors,
+                chartLineWidth: 22,
+                diameter: 240
+            )
+            .padding(.horizontal)
         }
-        .glassCard(cornerRadius: 24, accent: .electricBlue)
-        .shadow(color: Color.electricBlue.opacity(0.15), radius: 20, y: 8)
+        .padding(20)
     }
 }
 
@@ -136,35 +132,31 @@ struct CreateBudgetPage: View {
     let router: AppRouter
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 20) {
-                Text("New Budget")
-                    .font(.title2.bold())
-                    .foregroundStyle(.white)
+        VStack(spacing: 20) {
+            Text("New Budget")
+                .font(.title2.bold())
+                .foregroundStyle(.white)
 
-                ZStack {
-                    Circle()
-                        .trim(from: 0, to: 1)
-                        .stroke(
-                            LinearGradient(colors: [.hotPink.opacity(0.4), .electricBlue.opacity(0.2)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                            style: StrokeStyle(lineWidth: 22, lineCap: .round)
+            ZStack {
+                Circle()
+                    .trim(from: 0, to: 1)
+                    .stroke(
+                        LinearGradient(colors: [Color.hotPink.opacity(0.4), Color.electricBlue.opacity(0.2)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                        style: StrokeStyle(lineWidth: 22, lineCap: .round)
+                    )
+                    .frame(width: 200, height: 200)
+
+                Button(action: { navCreateBudget(router: router) }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 40, weight: .light))
+                        .foregroundStyle(
+                            LinearGradient(colors: [.electricBlue, .hotPink], startPoint: .topLeading, endPoint: .bottomTrailing)
                         )
-                        .frame(width: 200, height: 200)
-
-                    Button(action: { navCreateBudget(router: router) }) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 40, weight: .light))
-                            .foregroundStyle(
-                                LinearGradient(colors: [.electricBlue, .hotPink], startPoint: .topLeading, endPoint: .bottomTrailing)
-                            )
-                    }
                 }
-                .padding()
             }
-            .padding(20)
+            .padding()
         }
-        .glassCard(cornerRadius: 24, accent: .hotPink)
-        .shadow(color: Color.hotPink.opacity(0.1), radius: 20, y: 8)
+        .padding(20)
     }
 }
 

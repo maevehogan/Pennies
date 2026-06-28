@@ -80,13 +80,13 @@ private struct FloatingTabBar: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 28)
-                .fill(Color.white.opacity(0.07))
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color(red: 0.08, green: 0.08, blue: 0.14).opacity(0.96))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 28)
+                    RoundedRectangle(cornerRadius: 20)
                         .strokeBorder(
                             LinearGradient(
-                                colors: [Color.white.opacity(0.18), Color.white.opacity(0.05)],
+                                colors: [Color.white.opacity(0.15), Color.white.opacity(0.04)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             ),
@@ -94,9 +94,9 @@ private struct FloatingTabBar: View {
                         )
                 )
         )
-        .padding(.horizontal, 24)
-        .padding(.bottom, 20)
-        .shadow(color: Color.black.opacity(0.5), radius: 20, y: 8)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 4)
+        .shadow(color: Color.black.opacity(0.6), radius: 16, y: 4)
     }
 }
 

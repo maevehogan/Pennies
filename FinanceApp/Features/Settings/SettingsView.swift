@@ -11,6 +11,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var context
     let onLogout: () -> Void
 
+    @State private var isEditingAccounts = false
     @State private var editingEmail = false
     @State private var editingPassword = false
     @State private var emailDraft = ""
@@ -131,11 +132,24 @@ struct SettingsView: View {
 
                     // Linked Accounts
                     VStack(alignment: .leading, spacing: 0) {
-                        SectionHeader(title: "Connected Accounts")
-                            .padding(.bottom, 10)
-                            .padding(.horizontal, 4)
+                        HStack {
+                            SectionHeader(title: "Connected Accounts")
+                            Spacer()
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isEditingAccounts.toggle()
+                                }
+                            } label: {
+                                Image(systemName: isEditingAccounts ? "checkmark.circle.fill" : "pencil.circle")
+                                    .foregroundStyle(isEditingAccounts ? Color.mintAccent : Color.white.opacity(0.4))
+                                    .font(.body)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.bottom, 10)
+                        .padding(.horizontal, 4)
 
-                        LinkedAccountsView()
+                        LinkedAccountsView(isEditing: $isEditingAccounts)
                             .glassCard(cornerRadius: 18)
                     }
                     .padding(.horizontal, 20)

@@ -27,36 +27,17 @@ struct LinkedAccountsView: View {
     @State private var isSyncing = false
     @State private var errorMessage: String? = nil
     @State private var accountToDisconnect: LinkedAccount? = nil
-    @State private var isEditing = false
+    @Binding var isEditing: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if !accounts.isEmpty {
-                HStack {
-                    Spacer()
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isEditing.toggle()
-                        }
-                    } label: {
-                        Image(systemName: isEditing ? "checkmark.circle.fill" : "pencil.circle")
-                            .foregroundStyle(isEditing ? Color.mintAccent : Color.white.opacity(0.4))
-                            .font(.body)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .padding(.bottom, 4)
-            }
-
+        VStack(alignment: .leading, spacing: 10) {
             VStack(spacing: 0) {
                 if accounts.isEmpty && !isLoadingToken {
                     Text("No accounts connected yet.")
                         .font(.subheadline)
                         .foregroundStyle(Color.white.opacity(0.35))
                         .padding(.horizontal, 16)
-                        .padding(.bottom, 12)
+                        .padding(15)
                 } else {
                     ForEach(accounts) { account in
                         HStack {
@@ -179,7 +160,7 @@ struct LinkedAccountsView: View {
         errorMessage = nil
         do {
             // Exchange the short-lived public token for a stored access token
-            let newAccount = try await PlaidAPI.exchangeToken(
+            let _ = try await PlaidAPI.exchangeToken(
                 publicToken: publicToken,
                 institutionName: institutionName
             )

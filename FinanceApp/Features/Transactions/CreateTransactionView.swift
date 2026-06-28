@@ -120,7 +120,7 @@ struct CreateTransactionView: View {
                 }
             }
         }
-        .presentationBackground(Color.appBg)
+        .presentationBackground { AppBackground() }
     }
 
     private func save() async {

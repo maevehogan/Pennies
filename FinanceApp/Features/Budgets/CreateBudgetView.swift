@@ -17,7 +17,7 @@ struct CreateBudgetView: View {
                 CreateBudgetForm()
             }
         }
-        .presentationBackground(Color.appBg)
+        .presentationBackground { AppBackground() }
     }
 }
 
@@ -154,6 +154,8 @@ struct CreateBudgetForm: View {
             }
             .disabled(!canSave || isSaving)
             .animation(.easeInOut(duration: 0.2), value: canSave)
+            
+            Spacer()
         }
         .padding(.horizontal, 24)
         .padding(.top, 32)

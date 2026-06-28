@@ -118,7 +118,7 @@ struct MoveTransactionView: View {
                 )
             }
         }
-        .presentationBackground(Color.appBg)
+        .presentationBackground { AppBackground() }
     }
 
     @ViewBuilder

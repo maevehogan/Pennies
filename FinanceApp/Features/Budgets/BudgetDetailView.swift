@@ -17,9 +17,7 @@ struct BudgetDetailView: View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 40) {
                     HStack(alignment: .center) {
-                        Text(budget.budgetName)
-                            .font(.title.bold())
-                            .foregroundStyle(.white)
+                        GlowText(budget.budgetName, glowColors: [.electricBlue, .hotPink])
 
                         SubBudgetDropdown(
                             parentBudget: budget,

@@ -151,7 +151,8 @@ struct TransactionsListView: View {
                         }
                     }
                 }
-                .frame(maxHeight: .infinity)
+                .frame(maxHeight:  .infinity)
+                Spacer()
             }
         }
         .frame(maxHeight: .infinity)

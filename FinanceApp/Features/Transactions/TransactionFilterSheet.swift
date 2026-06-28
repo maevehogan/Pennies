@@ -77,7 +77,7 @@ struct TransactionFilterSheet: View {
                 }
             }
         }
-        .presentationBackground(Color.appBg)
+        .presentationBackground { AppBackground() }
     }
 
     // MARK: Date section

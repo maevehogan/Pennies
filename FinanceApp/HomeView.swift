@@ -111,23 +111,7 @@ struct BudgetPage: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text(budget.budgetName)
-                .font(.system(size: 22, weight: .semibold, design: .rounded))
-                .foregroundStyle(Color.white.opacity(0.72))
-                .tracking(0.5)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.electricBlue.opacity(0.18), Color.hotPink.opacity(0.10)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .shadow(color: Color.electricBlue.opacity(0.25), radius: 8, y: 2)
-                )
+            GlowText(budget.budgetName, glowColors: [.electricBlue, .hotPink])
 
             BudgetChartView(
                 parentBudget: .constant(budget),
@@ -147,23 +131,7 @@ struct CreateBudgetPage: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            Text("New Budget")
-                .font(.system(size: 22, weight: .semibold, design: .rounded))
-                .foregroundStyle(Color.white.opacity(0.72))
-                .tracking(0.5)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 6)
-                .background(
-                    Capsule()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.hotPink.opacity(0.18), Color.electricBlue.opacity(0.10)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .shadow(color: Color.hotPink.opacity(0.25), radius: 8, y: 2)
-                )
+            GlowText("New Budget", glowColors: [.hotPink, .electricBlue])
 
             ZStack {
                 Circle()

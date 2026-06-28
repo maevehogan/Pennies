@@ -108,6 +108,42 @@ struct GradientLabel: View {
     }
 }
 
+// MARK: - Glow Text
+
+struct GlowText: View {
+    let text: String
+    let font: Font
+    let color: Color
+    var glowColors: [Color]
+    var glowRadius: CGFloat = 10
+
+    init(_ text: String, font: Font = .system(size: 22, weight: .semibold, design: .rounded), color: Color = Color.white.opacity(0.72), glowColors: [Color] = [.electricBlue, .hotPink]) {
+        self.text = text
+        self.font = font
+        self.color = color
+        self.glowColors = glowColors
+    }
+
+    var body: some View {
+        ZStack {
+            // Blurred gradient glow layer — follows letter shapes
+            Text(text)
+                .font(font)
+                .foregroundStyle(
+                    LinearGradient(colors: glowColors, startPoint: .leading, endPoint: .trailing)
+                )
+                .blur(radius: glowRadius)
+                .opacity(0.7)
+
+            // Crisp text on top
+            Text(text)
+                .font(font)
+                .foregroundStyle(color)
+                .tracking(0.5)
+        }
+    }
+}
+
 // MARK: - Section Header
 
 struct SectionHeader: View {

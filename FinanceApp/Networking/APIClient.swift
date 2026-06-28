@@ -48,16 +48,26 @@ final class APIClient {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
 
-    // Token is stored in UserDefaults for simplicity.
-    // TODO: move to Keychain before shipping — UserDefaults is not encrypted.
     var token: String? {
-        get { UserDefaults.standard.string(forKey: "auth_token") }
-        set { UserDefaults.standard.set(newValue, forKey: "auth_token") }
+        get { KeychainStore.get(forKey: "auth_token") }
+        set {
+            if let newValue {
+                KeychainStore.set(newValue, forKey: "auth_token")
+            } else {
+                KeychainStore.delete(forKey: "auth_token")
+            }
+        }
     }
 
     var isLoggedIn: Bool { token != nil }
 
     private init() {
+        // One-time migration: move any token stored in UserDefaults to Keychain.
+        if let legacy = UserDefaults.standard.string(forKey: "auth_token") {
+            KeychainStore.set(legacy, forKey: "auth_token")
+            UserDefaults.standard.removeObject(forKey: "auth_token")
+        }
+
         session = URLSession.shared
 
         decoder = JSONDecoder()

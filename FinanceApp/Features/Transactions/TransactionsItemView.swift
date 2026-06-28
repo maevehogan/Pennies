@@ -34,9 +34,13 @@ struct TransactionsItemView: View {
                     } label: {
                         Image(systemName: "ellipsis")
                             .font(.title3)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.white.opacity(0.7))
                             .frame(width: moreWidth, height: 64)
-                            .background(Color.white.opacity(0.15))
+                            .background(Color.white.opacity(0.08))
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                            )
                     }
                 }
 
@@ -45,9 +49,13 @@ struct TransactionsItemView: View {
                 } label: {
                     Image(systemName: "trash.fill")
                         .font(.title3)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color(red: 1.0, green: 0.5, blue: 0.5))
                         .frame(width: deleteWidth, height: 64)
-                        .background(Color.red.opacity(0.8))
+                        .background(Color(red: 0.6, green: 0.1, blue: 0.15).opacity(0.6))
+                        .overlay(
+                            Rectangle()
+                                .strokeBorder(Color(red: 1.0, green: 0.3, blue: 0.3).opacity(0.3), lineWidth: 1)
+                        )
                 }
             }
             .frame(width: max(-offsetX, 0), alignment: .trailing)

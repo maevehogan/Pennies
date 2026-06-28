@@ -34,10 +34,16 @@ struct BudgetPageItem: View {
                     Image(systemName: "trash.fill").font(.title3)
                     Text("Delete").font(.caption)
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(Color(red: 1.0, green: 0.5, blue: 0.5))
                 .frame(width: deleteWidth, height: itemHeight)
-                .background(Color.red.opacity(0.8))
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(red: 0.6, green: 0.1, blue: 0.15).opacity(0.6))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(Color(red: 1.0, green: 0.3, blue: 0.3).opacity(0.3), lineWidth: 1)
+                        )
+                )
             }
 
             BudgetCard(progress: progress, budget: budget)

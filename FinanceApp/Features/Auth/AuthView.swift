@@ -33,7 +33,7 @@ struct AuthView: View {
                     }
                     .padding(.bottom, 8)
 
-                    GradientLabel("FinanceApp", font: .largeTitle.bold())
+                    GradientLabel("Pennies", font: .largeTitle.bold())
                     Text(isRegistering ? "Create your account" : "Welcome back")
                         .font(.subheadline)
                         .foregroundStyle(Color.white.opacity(0.5))

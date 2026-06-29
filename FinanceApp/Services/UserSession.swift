@@ -11,17 +11,19 @@ import SwiftData
 @Observable
 @MainActor
 class UserSession {
-    var email: String = ""
+    var email: String = KeychainStore.get(forKey: "user_email") ?? ""
 
     var isLoggedIn: Bool { APIClient.shared.isLoggedIn }
 
     func login(email: String) {
         self.email = email
+        KeychainStore.set(email, forKey: "user_email")
     }
 
     func updateEmail(_ newEmail: String) {
         // TODO: call PATCH /auth/update-email API, then set on success
         email = newEmail
+        KeychainStore.set(newEmail, forKey: "user_email")
     }
 
     func updatePassword(_ newPassword: String) {
@@ -31,6 +33,7 @@ class UserSession {
     func logout(context: ModelContext) {
         AuthAPI.logout()
         email = ""
+        KeychainStore.delete(forKey: "user_email")
         clearLocalData(context: context)
     }
 
